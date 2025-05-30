@@ -1,0 +1,16 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/loan_db
+    username: theanh
+    password: 100804
+  jpa:
+    show-sql: true
+jwt:
+  signerKey: 2309abbd-d085-4386-8dee-b0e008713c62
+  access-token-expiration: 3600
+  refresh-duration: 36000
