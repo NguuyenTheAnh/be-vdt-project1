@@ -9,13 +9,12 @@ import com.vdt_project1.loan_management.dto.request.RefreshRequest;
 import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.AuthenticationResponse;
 import com.vdt_project1.loan_management.dto.response.IntrospectResponse;
+import com.vdt_project1.loan_management.dto.response.UserResponse;
 import com.vdt_project1.loan_management.service.AuthenticationService;
+import com.vdt_project1.loan_management.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
@@ -25,6 +24,7 @@ import java.text.ParseException;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
+    UserService userService;
 
     @PostMapping("login")
     ApiResponse<AuthenticationResponse> login(@RequestBody AuthenticationRequest authenticationRequest)
@@ -57,6 +57,13 @@ public class AuthenticationController {
         var result = authenticationService.refreshToken(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .data(result)
+                .build();
+    }
+
+    @GetMapping("/my-profile")
+    ApiResponse<UserResponse> getMyProfile() {
+        return ApiResponse.<UserResponse>builder()
+                .data(userService.getMyProfile())
                 .build();
     }
 

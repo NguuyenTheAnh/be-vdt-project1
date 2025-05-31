@@ -38,17 +38,16 @@ public class UserService {
             log.warn("User with email '{}' already exists", request.getEmail());
             throw new AppException(ErrorCode.USER_EXISTS);
         }
-        
+
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setAccountStatus(AccountStatus.ACTIVE);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Set default USER role
-        log.info("Setting default USER role");
+        String roleName = request.getRoleName() != null ? request.getRoleName() : "USER";
         try {
-            user.setRole(roleRepository.findById("USER")
+            user.setRole(roleRepository.findById(roleName)
                     .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST)));
         } catch (Exception e) {
             log.error("Error setting user role: {}", e.getMessage());
@@ -58,7 +57,7 @@ public class UserService {
         log.info("Saving user to database");
         User savedUser = userRepository.save(user);
         log.info("User saved with ID: {}", savedUser.getId());
-        
+
         return userMapper.toUserResponse(savedUser);
     }
 

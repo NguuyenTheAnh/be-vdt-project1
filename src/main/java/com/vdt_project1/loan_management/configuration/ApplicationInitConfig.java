@@ -24,7 +24,7 @@ public class ApplicationInitConfig {
     public ApplicationRunner applicationRunner(UserRepository userRepository) {
         return args -> {
             // Initialize the database with a default admin user
-            if (!userRepository.existsByEmail("admin")) {
+            if (!userRepository.existsByEmail("admin@gmail.com")) {
                 Role role = roleRepository.findById("ADMIN")
                         .orElseGet(() -> roleRepository.save(
                                 Role.builder()
@@ -34,7 +34,7 @@ public class ApplicationInitConfig {
                         ));
 
                 User user = User.builder()
-                        .email("admin")
+                        .email("admin@gmail.com")
                         .password(passwordEncoder.encode("admin"))
                         .role(role)
                         .build();

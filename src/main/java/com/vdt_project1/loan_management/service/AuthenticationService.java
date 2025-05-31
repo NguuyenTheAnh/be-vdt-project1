@@ -105,6 +105,7 @@ public class AuthenticationService {
     }
 
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
+        log.info("Verifying token: {}", token);
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes(StandardCharsets.UTF_8));
         SignedJWT signedJWT = SignedJWT.parse(token);
         var verified = signedJWT.verify(verifier);

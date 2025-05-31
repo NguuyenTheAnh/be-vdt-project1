@@ -53,13 +53,6 @@ public class UserController {
                 .build();
     }
 
-    @GetMapping("/my-profile")
-    ApiResponse<UserResponse> getMyProfile() {
-        return ApiResponse.<UserResponse>builder()
-                .data(userService.getMyProfile())
-                .build();
-    }
-
     @DeleteMapping("/{id}")
     void deleteUserById(@PathVariable("id") Long id) {
         userService.deleteUserById(id);

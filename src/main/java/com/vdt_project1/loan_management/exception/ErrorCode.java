@@ -15,7 +15,12 @@ public enum ErrorCode {
     UNAUTHORIZED(1006, "Unauthorized access", HttpStatusCode.valueOf(403)),
     INVALID_DOB(1007, "Your age must be at least {min}", HttpStatusCode.valueOf(400)),
     ROLE_NOT_EXIST(1008, "Role does not exist", HttpStatusCode.valueOf(404)),
-    ;
+    LOAN_PRODUCT_NOT_FOUND(2001, "Loan product not found", HttpStatusCode.valueOf(404)),
+    INVALID_LOAN_PRODUCT_AMOUNT_RANGE(2002, "Minimum loan amount must be less than maximum loan amount",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_TERM_RANGE(2003, "Minimum loan term must be less than maximum loan term",
+            HttpStatusCode.valueOf(400)),
+            ;
 
     private int code;
     private String message;

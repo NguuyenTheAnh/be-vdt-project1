@@ -28,4 +28,6 @@ public class  UserCreationRequest {
 
     @NotBlank(message = "Address is required")
     String address;
+
+    String roleName;
 }
