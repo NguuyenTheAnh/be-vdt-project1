@@ -9,6 +9,8 @@ import com.vdt_project1.loan_management.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +30,7 @@ public class RoleService {
     public RoleResponse createRole(RoleRequest roleRequest) {
         Role role = roleMapper.toRole(roleRequest);
 
-        if(roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty())
-        {
+        if (roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty()) {
             var permissions = permissionRepository.findAllById(roleRequest.getPermissions());
             role.setPermissions(new HashSet<>(permissions));
         }
@@ -37,11 +38,9 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(role));
     }
 
-    public List<RoleResponse> getAllRoles() {
-        return roleRepository.findAll()
-                .stream()
-                .map(roleMapper::toRoleResponse)
-                .toList();
+    public Page<RoleResponse> getAllRoles(Pageable pageable) {
+      Page<Role> rolesPage = roleRepository.findAll(pageable);
+      return rolesPage.map(roleMapper::toRoleResponse);
     }
 
     public RoleResponse updateRole(String roleName, RoleRequest roleRequest) {
@@ -51,8 +50,7 @@ public class RoleService {
         Role updatedRole = roleMapper.toRole(roleRequest);
         updatedRole.setName(existingRole.getName()); // Preserve the original role name
 
-        if(roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty())
-        {
+        if (roleRequest.getPermissions() != null && !roleRequest.getPermissions().isEmpty()) {
             var permissions = permissionRepository.findAllById(roleRequest.getPermissions());
             updatedRole.setPermissions(new HashSet<>(permissions));
         }

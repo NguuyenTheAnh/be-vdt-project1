@@ -20,6 +20,8 @@ public enum ErrorCode {
             HttpStatusCode.valueOf(400)),
     INVALID_LOAN_PRODUCT_TERM_RANGE(2003, "Minimum loan term must be less than maximum loan term",
             HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_DOCUMENTS(2004, "At least one required document must be specified",
+            HttpStatusCode.valueOf(400)),
             ;
 
     private int code;

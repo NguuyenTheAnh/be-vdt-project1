@@ -8,6 +8,8 @@ import com.vdt_project1.loan_management.repository.PermissionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,11 +27,9 @@ public class PermissionService {
         return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
     }
 
-    public List<PermissionResponse> getAllPermissions() {
-        var permissions = permissionRepository.findAll();
-        return permissions.stream()
-                .map(permissionMapper::toPermissionResponse)
-                .toList();
+    public Page<PermissionResponse> getAllPermissions(Pageable pageable) {
+        Page<Permission> permissions = permissionRepository.findAll(pageable);
+        return permissions.map(permissionMapper::toPermissionResponse);
     }
 
     public void deletePermission(String permissionName) {

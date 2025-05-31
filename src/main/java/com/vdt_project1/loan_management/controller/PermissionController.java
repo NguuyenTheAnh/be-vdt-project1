@@ -7,6 +7,8 @@ import com.vdt_project1.loan_management.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,9 +29,9 @@ public class PermissionController {
     }
 
     @GetMapping
-    ApiResponse<List<PermissionResponse>> getPermissions() {
-        return ApiResponse.<List<PermissionResponse>>builder()
-                .data(permissionService.getAllPermissions())
+    ApiResponse<Page<PermissionResponse>> getPermissions(Pageable pageable) {
+        return ApiResponse.<Page<PermissionResponse>>builder()
+                .data(permissionService.getAllPermissions(pageable))
                 .build();
     }
 

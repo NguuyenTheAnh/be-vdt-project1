@@ -7,6 +7,8 @@ import com.vdt_project1.loan_management.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,16 +30,17 @@ public class RoleController {
     }
 
     @GetMapping
-    ApiResponse<List<RoleResponse>> getAllRoles() {
-        return ApiResponse.<List<RoleResponse>>builder()
-                .data(roleService.getAllRoles())
+    ApiResponse<Page<RoleResponse>> getAllRoles(Pageable pageable) {
+        return ApiResponse.<Page<RoleResponse>>builder()
+                .data   (roleService.getAllRoles(pageable))
                 .build();
     }
 
     @PatchMapping("/{roleName}")
-    ApiResponse<RoleResponse> updateRole(@PathVariable("roleName") String roleName, @RequestBody RoleRequest roleRequest) {
+    ApiResponse<RoleResponse> updateRole(@PathVariable("roleName") String roleName,
+            @RequestBody RoleRequest roleRequest) {
         return ApiResponse.<RoleResponse>builder()
-                .data(roleService.updateRole(roleName,roleRequest))
+                .data(roleService.updateRole(roleName, roleRequest))
                 .build();
     }
 

@@ -1,15 +1,11 @@
 package com.vdt_project1.loan_management.entity;
 
-import com.vdt_project1.loan_management.enums.AccountStatus;
 import com.vdt_project1.loan_management.enums.LoanProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -42,17 +38,15 @@ public class LoanProduct {
 
     @Column(name = "min_term", nullable = false)
     Integer minTerm;
-
     @Column(name = "max_term", nullable = false)
     Integer maxTerm;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 50)
+    @Builder.Default
     LoanProductStatus status = LoanProductStatus.ACTIVE;
-
     @Column(name = "required_documents", nullable = false)
-    @ElementCollection(targetClass = String.class)
-    Set<String> requiredDocuments;
+    String requiredDocuments;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;

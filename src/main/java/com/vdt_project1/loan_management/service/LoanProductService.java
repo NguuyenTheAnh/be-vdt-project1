@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,15 +26,39 @@ public class LoanProductService {
     LoanProductRepository loanProductRepository;
     LoanProductMapper loanProductMapper;
 
+    private LoanProduct findLoanProductById(Long id) {
+        return loanProductRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_PRODUCT_NOT_FOUND));
+    }
+
+    private void validateLoanProduct(LoanProduct loanProduct) {
+        // Validate min amount is less than max amount
+        if (loanProduct.getMinAmount() >= loanProduct.getMaxAmount()) {
+            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_AMOUNT_RANGE);
+        }
+
+        // Validate min term is less than max term
+        if (loanProduct.getMinTerm() >= loanProduct.getMaxTerm()) {
+            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_TERM_RANGE);
+        }
+    }
+
     @Transactional
     public LoanProductResponse createLoanProduct(LoanProductRequest request) {
         log.info("Creating new loan product: {}", request.getName());
+
+        // Validate required documents before creating entity
+        if (request.getRequiredDocuments() == null || request.getRequiredDocuments().trim().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_DOCUMENTS);
+        }
 
         LoanProduct loanProduct = loanProductMapper.toEntity(request);
 
         if (loanProduct.getStatus() == null) {
             loanProduct.setStatus(LoanProductStatus.ACTIVE);
         }
+
+        log.info("Required documents: {}", request.getRequiredDocuments());
 
         loanProduct.setCreatedAt(LocalDateTime.now());
         loanProduct.setUpdatedAt(LocalDateTime.now());
@@ -50,22 +72,6 @@ public class LoanProductService {
     }
 
     @Transactional(readOnly = true)
-    public Page<LoanProductResponse> getAllLoanProducts(Pageable pageable) {
-        log.info("Fetching all loan products with pagination");
-        return loanProductRepository.findAll(pageable)
-                .map(loanProductMapper::toResponse);
-    }
-
-    @Transactional(readOnly = true)
-    public List<LoanProductResponse> getAllActiveLoanProducts() {
-        log.info("Fetching all active loan products");
-        return loanProductRepository.findAll().stream()
-                .filter(product -> LoanProductStatus.ACTIVE.equals(product.getStatus()))
-                .map(loanProductMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public LoanProductResponse getLoanProductById(Long id) {
         log.info("Fetching loan product with ID: {}", id);
         LoanProduct loanProduct = findLoanProductById(id);
@@ -75,6 +81,12 @@ public class LoanProductService {
     @Transactional
     public LoanProductResponse updateLoanProduct(Long id, LoanProductRequest request) {
         log.info("Updating loan product with ID: {}", id);
+
+        // Validate required documents before updating
+        if (request.getRequiredDocuments() == null || request.getRequiredDocuments().trim().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_DOCUMENTS);
+        }
+
         LoanProduct existingProduct = findLoanProductById(id);
 
         loanProductMapper.updateEntityFromRequest(request, existingProduct);
@@ -102,20 +114,20 @@ public class LoanProductService {
         return loanProductMapper.toResponse(updatedProduct);
     }
 
-    private LoanProduct findLoanProductById(Long id) {
-        return loanProductRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.LOAN_PRODUCT_NOT_FOUND));
-    }
-
-    private void validateLoanProduct(LoanProduct loanProduct) {
-        // Validate min amount is less than max amount
-        if (loanProduct.getMinAmount() >= loanProduct.getMaxAmount()) {
-            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_AMOUNT_RANGE);
+    @Transactional(readOnly = true)
+    public Page<LoanProductResponse> getAllLoanProducts(String name, String status, Pageable pageable) {
+        Page<LoanProduct> loanProductPage;
+        if(name!=null && status !=null){
+            loanProductPage = loanProductRepository.findByNameContainingIgnoreCaseAndStatus(
+                    name, LoanProductStatus.valueOf(status.toUpperCase()), pageable);
         }
-
-        // Validate min term is less than max term
-        if (loanProduct.getMinTerm() >= loanProduct.getMaxTerm()) {
-            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_TERM_RANGE);
+        else if(name != null) {
+            loanProductPage = loanProductRepository.findByNameContainingIgnoreCase(name, pageable);
+        } else if(status != null) {
+            loanProductPage = loanProductRepository.findByStatus(LoanProductStatus.valueOf(status.toUpperCase()), pageable);
+        } else {
+            loanProductPage = loanProductRepository.findAll(pageable);
         }
+        return loanProductPage.map(loanProductMapper::toResponse);
     }
 }

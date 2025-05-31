@@ -13,6 +13,8 @@ import com.vdt_project1.loan_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -62,11 +64,14 @@ public class UserService {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    public List<UserResponse> getUsers() {
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toUserResponse)
-                .toList();
+    public Page<UserResponse> getUsers(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        if (users.isEmpty()) {
+            log.warn("No users found");
+            return Page.empty();
+        }
+        log.info("Found {} users", users.getTotalElements());
+        return users.map(userMapper::toUserResponse);
     }
 
     public UserResponse getMyProfile() {

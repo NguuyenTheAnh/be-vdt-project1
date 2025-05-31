@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,12 +32,12 @@ public class UserController {
     }
 
     @GetMapping()
-    ApiResponse<List<UserResponse>> getUsers() {
+    ApiResponse<Page<UserResponse>> getUsers(Pageable pageable) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("User {} is accessing the getUsers endpoint", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
-        return ApiResponse.<List<UserResponse>>builder()
-                .data(userService.getUsers())
+        return ApiResponse.<Page<UserResponse>>builder()
+                .data(userService.getUsers(pageable))
                 .build();
     }
 
