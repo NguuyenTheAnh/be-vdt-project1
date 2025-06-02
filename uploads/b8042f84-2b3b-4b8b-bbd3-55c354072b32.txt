@@ -1,0 +1,8 @@
+Quang: 
+*Thiết kế hệ thống được chia làm 2 loại:
+- low level design: là design vào chi tiết ở tầng class, đấy chính là những gì em học trong môn OOP, các design pattern, SOLID ...
+- high level design: là design ở tầng system architecture xem hệ thống của mình có những component nào, các component đó giao tiếp với nhau ntn.
+*Tối ưu hệ thống: 
+- Trong 1 hệ thống thì nó có 1 vài metrics mà mình quan tâm, ví dụ latency, throughput, number of concurrent users ...
+- Tối ưu hệ thống cụ thể là optimize những metrics này
+- 30 tuổi a nghĩ nên là level Senior /Staff trở lên nếu theo IC, hoặc làm manager. Còn 30 tuổi còn vẫn là mid level thì dễ bị thay thế bới lớp trẻ hơn là thực tế -> tóm lại: lên level

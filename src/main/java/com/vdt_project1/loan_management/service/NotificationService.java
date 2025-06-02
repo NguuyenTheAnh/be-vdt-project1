@@ -71,9 +71,7 @@ public class NotificationService {
         log.info("Fetching all notifications for user ID: {}", userResponse.getId());
 
         return notificationRepository.findByUserId(userResponse.getId(), pageable)
-                .map(notification -> {
-                    return notificationMapper.toResponse(notification);
-                });
+                .map(notificationMapper::toResponse);
     }
 
     @PostAuthorize("returnObject.user.email == authentication.getName()")
@@ -102,6 +100,16 @@ public class NotificationService {
         } else {
             log.info("No notifications found for user ID: {}", userResponse.getId());
         }
+    }
+
+    @Transactional
+    public long getUnreadNotificationsCount() {
+        UserResponse userResponse = userService.getMyProfile();
+        log.info("Fetching unread notifications count for user ID: {}", userResponse.getId());
+
+        long count = notificationRepository.countByUserIdAndIsReadFalse(userResponse.getId());
+        log.info("Unread notifications count for user ID {}: {}", userResponse.getId(), count);
+        return count;
     }
 
     @Transactional

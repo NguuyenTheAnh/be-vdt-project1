@@ -5,6 +5,7 @@ import com.vdt_project1.loan_management.dto.request.LoanProductRequest;
 import com.vdt_project1.loan_management.dto.response.LoanApplicationResponse;
 import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
+import com.vdt_project1.loan_management.entity.Document;
 import com.vdt_project1.loan_management.entity.LoanApplication;
 import com.vdt_project1.loan_management.entity.LoanProduct;
 import com.vdt_project1.loan_management.entity.User;
@@ -14,18 +15,23 @@ import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.mapper.LoanApplicationMapper;
 import com.vdt_project1.loan_management.mapper.LoanProductMapper;
+import com.vdt_project1.loan_management.repository.DocumentRepository;
 import com.vdt_project1.loan_management.repository.LoanApplicationRepository;
 import com.vdt_project1.loan_management.repository.LoanProductRepository;
 import com.vdt_project1.loan_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.mapping.Any;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -35,6 +41,7 @@ public class LoanApplicationService {
    LoanApplicationMapper loanApplicationMapper;
    LoanApplicationRepository loanApplicationRepository;
     LoanProductRepository loanProductRepository;
+    DocumentRepository documentRepository;
     UserRepository userRepository;
     UserService userService;
 
@@ -49,6 +56,32 @@ public class LoanApplicationService {
     private User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+    }
+    public static Map<String, Object> buildEmptyDocumentMap(String requiredDocuments) {
+        Map<String, Object> map = new HashMap<>();
+        if (requiredDocuments != null && !requiredDocuments.isBlank()) {
+            String[] keys = requiredDocuments.trim().split("\\s+");
+            for (String key : keys) {
+                map.put(key, null);
+            }
+        }
+        return map;
+    }
+
+    @Transactional(readOnly = true)
+    public Map<String, Object> getRequiredDocument(Long applicationId) {
+        log.info("Fetching required documents for loan application ID: {}", applicationId);
+        LoanApplication loanApplication = findLoanApplicationById(applicationId);
+        Map<String, Object> requiredDocs = buildEmptyDocumentMap(loanApplication.getLoanProduct().getRequiredDocuments());
+        List<Document> documents = documentRepository.findByLoanApplicationId(applicationId, null).getContent();
+        for (Document document : documents) {
+            String type = document.getDocumentType();
+            String fileName = document.getFileName();
+            if (requiredDocs.containsKey(type)) {
+                requiredDocs.put(type, fileName);
+            }
+        }
+        return requiredDocs;
     }
 
     @Transactional

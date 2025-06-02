@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -49,6 +50,14 @@ public class LoanApplicationController {
                         .build();
         }
 
+        @GetMapping("/required-documents/{id}")
+        public ApiResponse<Map<String, Object>> getRequiredDocuments(@PathVariable Long id) {
+                log.info("Fetching required documents for loan product with ID: {}", id);
+                Map<String, Object> response = loanApplicationService.getRequiredDocument(id);
+                return ApiResponse.<Map<String, Object>>builder()
+                        .data(response)
+                        .build();
+        }
 
         @GetMapping("/user")
         public ApiResponse<Page<LoanApplicationResponse>> getMyLoanApplications(Pageable pageable) {

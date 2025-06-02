@@ -10,6 +10,10 @@ spring:
     password: 100804
   jpa:
     show-sql: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 jwt:
   signerKey: 2309abbd-d085-4386-8dee-b0e008713c62
   access-token-expiration: 3600

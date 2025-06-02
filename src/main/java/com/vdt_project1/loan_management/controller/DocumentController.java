@@ -2,6 +2,7 @@ package com.vdt_project1.loan_management.controller;
 
 
 import com.vdt_project1.loan_management.dto.request.DocumentRequest;
+import com.vdt_project1.loan_management.dto.request.DocumentUpdateRequest;
 import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.DocumentResponse;
 import com.vdt_project1.loan_management.service.DocumentService;
@@ -12,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -30,7 +33,7 @@ public class DocumentController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/application")
     public ApiResponse<Page<DocumentResponse>> getDocument(
             @RequestParam Long applicationId,
             Pageable pageable
@@ -46,6 +49,15 @@ public class DocumentController {
         DocumentResponse response = documentService.getDocumentById(id);
         return ApiResponse.<DocumentResponse>builder()
                 .data(response)
+                .build();
+    }
+
+    @PatchMapping
+    public ApiResponse<Void> updateDocumentFle(@RequestBody DocumentUpdateRequest request) {
+        log.info("Updating document file with request: {}", request);
+        documentService.updateDocumentFile(request);
+        return ApiResponse.<Void>builder()
+                .data(null)
                 .build();
     }
 

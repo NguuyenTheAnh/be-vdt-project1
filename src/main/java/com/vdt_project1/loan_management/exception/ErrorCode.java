@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatusCode;
 @Getter
 public enum ErrorCode {
     UNCATEGORIZED_ERROR(9999, "An uncategorized error occurred", HttpStatusCode.valueOf(500)),
+    SERVER_ERROR(9998, "An internal server error occurred", HttpStatusCode.valueOf(500)),
     INVALID_MESSAGE_KEY(1111, "Invalid message key", HttpStatusCode.valueOf(400)),
     USER_EXISTS(1001, "User already exists", HttpStatusCode.valueOf(400)),
     INVALID_EMAIL(1002, "Email must be in a valid format", HttpStatusCode.valueOf(400)),

@@ -20,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,6 +83,26 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
         return userMapper.toUserResponse(user);
+    }
+
+    @Transactional
+    public UserResponse updateMyProfile(UserUpdateRequest request) {
+        User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        userMapper.updateProfile(user, request);
+        user.setUpdatedAt(LocalDateTime.now());
+
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        if (request.getRoleName() != null && !request.getRoleName().isEmpty()) {
+            user.setRole(roleRepository.findById(request.getRoleName())
+                    .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_EXIST)));
+        }
+
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     @PostAuthorize(" returnObject.email == authentication.name or hasRole('ADMIN')")

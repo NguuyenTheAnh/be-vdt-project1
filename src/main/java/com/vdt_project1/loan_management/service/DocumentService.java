@@ -1,6 +1,7 @@
 package com.vdt_project1.loan_management.service;
 
 import com.vdt_project1.loan_management.dto.request.DocumentRequest;
+import com.vdt_project1.loan_management.dto.request.DocumentUpdateRequest;
 import com.vdt_project1.loan_management.dto.response.DocumentResponse;
 import com.vdt_project1.loan_management.entity.Document;
 import com.vdt_project1.loan_management.entity.LoanApplication;
@@ -16,6 +17,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -39,6 +45,8 @@ public class DocumentService {
 
         Document document =  documentMapper.toEntity(request);
         document.setLoanApplication(loanApplication);
+        document.setUploadedAt(LocalDateTime.now());
+
         document = documentRepository.save(document);
         return documentMapper.toResponse(document);
     }
@@ -60,6 +68,18 @@ public class DocumentService {
         Document document = documentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.DOCUMENT_NOT_FOUND));
         return documentMapper.toResponse(document);
+    }
+
+    @Transactional
+    public void updateDocumentFile(DocumentUpdateRequest request){
+        String fileName = request.getFileName();
+        Long applicationId =  request.getApplicationId();
+        String documentType = request.getDocumentType();
+
+        Document document = documentRepository.findByLoanApplicationIdAndDocumentType(applicationId, documentType);
+        document.setFileName(fileName);
+        document.setUploadedAt(LocalDateTime.now());
+        documentRepository.save(document);
     }
 
     @Transactional

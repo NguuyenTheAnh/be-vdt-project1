@@ -28,7 +28,6 @@ public class SecurityConfig {
 
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
-
     private final String[] PUBLIC_ENDPOINTS_AUTH = {
             "/users",
             "/auth/login",
@@ -36,9 +35,9 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/refresh",
     };
-
     private final String[] PUBLIC_ENDPOINTS_GET = {
-            "/loan-products/**"
+            "/loan-products/**",
+            "/uploads/**"
     };
 
     @Bean
@@ -73,9 +72,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    // JwtAuthenticationConverter to convert JWT tokens to Spring Security Authentication objects
-    //Store Authentication into SecurityContextHolder.getContext()
-    // SecurityContextHolder.getContext().getAuthentication() includes {principal: JWT Object, credentials, authorities: roles, name:sub, details}
+    // JwtAuthenticationConverter to convert JWT tokens to Spring Security
+    // Authentication objects
+    // Store Authentication into SecurityContextHolder.getContext()
+    // SecurityContextHolder.getContext().getAuthentication() includes {principal:
+    // JWT Object, credentials, authorities: roles, name:sub, details}
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");

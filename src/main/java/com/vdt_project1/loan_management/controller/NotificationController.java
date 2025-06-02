@@ -34,6 +34,16 @@ public class NotificationController {
                 .build();
     }
 
+    @GetMapping("/unread-count")
+    public ApiResponse<Long> getUnreadNotificationsCount() {
+        log.info("Received request to get unread notifications count");
+        long count = notificationService.getUnreadNotificationsCount();
+        log.info("Unread notifications count: {}", count);
+        return ApiResponse.<Long>builder()
+                .data(count)
+                .build();
+    }
+
     @PostMapping("/mark-all-as-read")
     public ApiResponse<Void> markAllNotificationsAsRead() {
         log.info("Received request to mark all notifications as read");

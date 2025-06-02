@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
     // Additional query methods can be defined here if needed
     Page<Document> findByLoanApplicationId(Long loanApplicationId, Pageable pageable);
+
+    Document findByLoanApplicationIdAndDocumentType( Long loanApplicationId, String documentType);
 }

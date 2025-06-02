@@ -48,6 +48,13 @@ public class UserController {
                 .build();
     }
 
+    @PatchMapping
+    ApiResponse<UserResponse> updateUserProfile(@RequestBody UserUpdateRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .data(userService.updateMyProfile(request))
+                .build();
+    }
+
     @PatchMapping("/{id}")
     ApiResponse<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder()
