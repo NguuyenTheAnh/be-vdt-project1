@@ -38,6 +38,7 @@ public class LoanProduct {
 
     @Column(name = "min_term", nullable = false)
     Integer minTerm;
+
     @Column(name = "max_term", nullable = false)
     Integer maxTerm;
 
@@ -45,6 +46,7 @@ public class LoanProduct {
     @Column(name = "status", nullable = false, length = 50)
     @Builder.Default
     LoanProductStatus status = LoanProductStatus.ACTIVE;
+
     @Column(name = "required_documents", nullable = false)
     String requiredDocuments;
 

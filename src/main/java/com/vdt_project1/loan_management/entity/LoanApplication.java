@@ -1,5 +1,6 @@
 package com.vdt_project1.loan_management.entity;
 
+import com.vdt_project1.loan_management.enums.LoanApplicationStatus;
 import com.vdt_project1.loan_management.enums.LoanProductStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,43 +11,46 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "loan_products")
-public class LoanProduct {
+@Table(name = "loan_applications")
+public class LoanApplication {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
+    @Column(name = "application_id")
     Long id;
 
-    @Column(name = "name", nullable = false, length = 100)
-    String name;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
 
-    @Column(name = "description")
-    String description;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    LoanProduct loanProduct;
 
-    @Column(name = "interest_rate", nullable = false)
-    Double interestRate;
+    @Column(name = "requested_amount", nullable = false)
+    Long requestedAmount;
 
-    @Column(name = "min_amount", nullable = false)
-    Long minAmount;
+    @Column(name = "requested_term", nullable = false)
+    Integer requestedTerm;
 
-    @Column(name = "max_amount", nullable = false)
-    Long maxAmount;
-
-    @Column(name = "min_term", nullable = false)
-    Integer minTerm;
-    @Column(name = "max_term", nullable = false)
-    Integer maxTerm;
+    @Column(name = "personal_info", nullable = false)
+    String personalInfo;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 50)
-    @Builder.Default
-    LoanProductStatus status = LoanProductStatus.ACTIVE;
-    @Column(name = "required_documents", nullable = false)
-    String requiredDocuments;
+    @Column(name="status", nullable = false, length = 50)
+    LoanApplicationStatus status;
+
+    @Column(name = "disbursed_amount")
+    Long disbursedAmount;
+
+    @Column(name = "disbursed_date")
+    LocalDateTime disbursedDate;
+
+    @Column(name = "internal_notes")
+    String internalNotes;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;

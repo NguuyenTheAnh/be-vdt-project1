@@ -29,18 +29,24 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
-    private final String[] PUBLIC_ENDPOINTS = {
+    private final String[] PUBLIC_ENDPOINTS_AUTH = {
             "/users",
             "/auth/login",
             "/auth/introspect",
             "/auth/logout",
-            "/auth/refresh"
+            "/auth/refresh",
+    };
+
+    private final String[] PUBLIC_ENDPOINTS_GET = {
+            "/loan-products/**"
     };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults());
-        http.authorizeHttpRequests(request -> request.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+        http.authorizeHttpRequests(request -> request
+                .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_AUTH).permitAll()
                 .anyRequest().authenticated());
         http.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(customJwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))
@@ -67,6 +73,9 @@ public class SecurityConfig {
     }
 
     @Bean
+    // JwtAuthenticationConverter to convert JWT tokens to Spring Security Authentication objects
+    //Store Authentication into SecurityContextHolder.getContext()
+    // SecurityContextHolder.getContext().getAuthentication() includes {principal: JWT Object, credentials, authorities: roles, name:sub, details}
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");

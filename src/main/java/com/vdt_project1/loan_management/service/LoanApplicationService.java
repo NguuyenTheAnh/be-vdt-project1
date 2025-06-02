@@ -1,13 +1,22 @@
 package com.vdt_project1.loan_management.service;
 
+import com.vdt_project1.loan_management.dto.request.LoanApplicationRequest;
 import com.vdt_project1.loan_management.dto.request.LoanProductRequest;
+import com.vdt_project1.loan_management.dto.response.LoanApplicationResponse;
 import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
+import com.vdt_project1.loan_management.dto.response.UserResponse;
+import com.vdt_project1.loan_management.entity.LoanApplication;
 import com.vdt_project1.loan_management.entity.LoanProduct;
+import com.vdt_project1.loan_management.entity.User;
+import com.vdt_project1.loan_management.enums.LoanApplicationStatus;
 import com.vdt_project1.loan_management.enums.LoanProductStatus;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
+import com.vdt_project1.loan_management.mapper.LoanApplicationMapper;
 import com.vdt_project1.loan_management.mapper.LoanProductMapper;
+import com.vdt_project1.loan_management.repository.LoanApplicationRepository;
 import com.vdt_project1.loan_management.repository.LoanProductRepository;
+import com.vdt_project1.loan_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -22,112 +31,96 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
-public class LoanProductService {
+public class LoanApplicationService {
+   LoanApplicationMapper loanApplicationMapper;
+   LoanApplicationRepository loanApplicationRepository;
     LoanProductRepository loanProductRepository;
-    LoanProductMapper loanProductMapper;
+    UserRepository userRepository;
+    UserService userService;
 
     private LoanProduct findLoanProductById(Long id) {
         return loanProductRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_PRODUCT_NOT_FOUND));
     }
-
-    private void validateLoanProduct(LoanProduct loanProduct) {
-        // Validate min amount is less than max amount
-        if (loanProduct.getMinAmount() >= loanProduct.getMaxAmount()) {
-            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_AMOUNT_RANGE);
-        }
-
-        // Validate min term is less than max term
-        if (loanProduct.getMinTerm() >= loanProduct.getMaxTerm()) {
-            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_TERM_RANGE);
-        }
+    private LoanApplication findLoanApplicationById(Long id) {
+        return loanApplicationRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.LOAN_APPLICATION_NOT_FOUND));
+    }
+    private User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     }
 
     @Transactional
-    public LoanProductResponse createLoanProduct(LoanProductRequest request) {
-        log.info("Creating new loan product: {}", request.getName());
+    public LoanApplicationResponse createLoanApplication(LoanApplicationRequest request) {
+        UserResponse userResponse = userService.getMyProfile();
+       log.info("Creating new loan application for user ID: {}", userResponse.getId());
 
-        // Validate required documents before creating entity
-        if (request.getRequiredDocuments() == null || request.getRequiredDocuments().trim().isEmpty()) {
-            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_DOCUMENTS);
+        LoanApplication loanApplication = loanApplicationMapper.toEntity(request);
+        // Validate user exists
+        User user = findUserById(userResponse.getId());
+        loanApplication.setUser(user);
+        // Validate loan product exists
+        LoanProduct loanProduct = findLoanProductById(request.getProductId());
+        loanApplication.setLoanProduct(loanProduct);
+
+        // Set default status if not provided
+        if (loanApplication.getStatus() == null) {
+            loanApplication.setStatus(LoanApplicationStatus.NEW);
         }
 
-        LoanProduct loanProduct = loanProductMapper.toEntity(request);
+        // Set timestamps
+        loanApplication.setCreatedAt(LocalDateTime.now());
+        loanApplication.setUpdatedAt(LocalDateTime.now());
 
-        if (loanProduct.getStatus() == null) {
-            loanProduct.setStatus(LoanProductStatus.ACTIVE);
-        }
-
-        log.info("Required documents: {}", request.getRequiredDocuments());
-
-        loanProduct.setCreatedAt(LocalDateTime.now());
-        loanProduct.setUpdatedAt(LocalDateTime.now());
-
-        validateLoanProduct(loanProduct);
-
-        LoanProduct savedProduct = loanProductRepository.save(loanProduct);
-        log.info("Loan product created successfully with ID: {}", savedProduct.getId());
-
-        return loanProductMapper.toResponse(savedProduct);
+        LoanApplication savedApplication = loanApplicationRepository.save(loanApplication);
+        log.info("Loan application created successfully with ID: {}", savedApplication.getId());
+        log.info("Loan application status: {}", savedApplication.getStatus());
+        return loanApplicationMapper.toResponse(savedApplication);
     }
 
     @Transactional(readOnly = true)
-    public LoanProductResponse getLoanProductById(Long id) {
-        log.info("Fetching loan product with ID: {}", id);
-        LoanProduct loanProduct = findLoanProductById(id);
-        return loanProductMapper.toResponse(loanProduct);
-    }
-
-    @Transactional
-    public LoanProductResponse updateLoanProduct(Long id, LoanProductRequest request) {
-        log.info("Updating loan product with ID: {}", id);
-
-        // Validate required documents before updating
-        if (request.getRequiredDocuments() == null || request.getRequiredDocuments().trim().isEmpty()) {
-            throw new AppException(ErrorCode.INVALID_LOAN_PRODUCT_DOCUMENTS);
-        }
-
-        LoanProduct existingProduct = findLoanProductById(id);
-
-        loanProductMapper.updateEntityFromRequest(request, existingProduct);
-        existingProduct.setUpdatedAt(LocalDateTime.now());
-
-        validateLoanProduct(existingProduct);
-
-        LoanProduct updatedProduct = loanProductRepository.save(existingProduct);
-        log.info("Loan product updated successfully: {}", updatedProduct.getId());
-
-        return loanProductMapper.toResponse(updatedProduct);
-    }
-
-    @Transactional
-    public LoanProductResponse changeStatus(Long id, LoanProductStatus status) {
-        log.info("Changing status of loan product with ID: {} to {}", id, status);
-        LoanProduct loanProduct = findLoanProductById(id);
-
-        loanProduct.setStatus(status);
-        loanProduct.setUpdatedAt(LocalDateTime.now());
-
-        LoanProduct updatedProduct = loanProductRepository.save(loanProduct);
-        log.info("Loan product status changed successfully: {}", updatedProduct.getId());
-
-        return loanProductMapper.toResponse(updatedProduct);
+    public Page<LoanApplicationResponse> getAllLoanApplications(Pageable pageable) {
+        log.info("Fetching all loan applications with pagination");
+        return loanApplicationRepository.findAll(pageable)
+                .map(loanApplicationMapper::toResponse);
     }
 
     @Transactional(readOnly = true)
-    public Page<LoanProductResponse> getAllLoanProducts(String name, String status, Pageable pageable) {
-        Page<LoanProduct> loanProductPage;
-        if(name!=null && status !=null){
-            loanProductPage = loanProductRepository.findByNameContainingIgnoreCaseAndStatus(
-                    name, LoanProductStatus.valueOf(status.toUpperCase()), pageable);
-        }
-        else if(name != null) {
-            loanProductPage = loanProductRepository.findByNameContainingIgnoreCase(name, pageable);
-        } else if(status != null) {
-            loanProductPage = loanProductRepository.findByStatus(LoanProductStatus.valueOf(status.toUpperCase()), pageable);
-        } else {
-            loanProductPage = loanProductRepository.findAll(pageable);
-        }
-        return loanProductPage.map(loanProductMapper::toResponse);
+    public Page<LoanApplicationResponse> getAllLoanApplicationsOfAUser(Pageable pageable) {
+        log.info("Fetching all loan applications for the current user with pagination");
+        UserResponse userResponse = userService.getMyProfile();
+        return loanApplicationRepository.findByUserId(userResponse.getId(), pageable)
+                .map(loanApplicationMapper::toResponse);
     }
+
+    @Transactional(readOnly = true)
+    public LoanApplicationResponse getLoanApplicationById(Long id) {
+        log.info("Fetching loan application with ID: {}", id);
+        LoanApplication loanApplication = findLoanApplicationById(id);
+        return loanApplicationMapper.toResponse(loanApplication);
+    }
+
+    @Transactional
+    public LoanApplicationResponse updateLoanApplication(Long id, LoanApplicationRequest request) {
+        log.info("Updating loan application with ID: {}", id);
+        LoanApplication existingApplication = findLoanApplicationById(id);
+
+        // Update fields
+        loanApplicationMapper.updateEntityFromRequest(request, existingApplication);
+        existingApplication.setUpdatedAt(LocalDateTime.now());
+
+        LoanApplication updatedApplication = loanApplicationRepository.save(existingApplication);
+        log.info("Loan application updated successfully with ID: {}", updatedApplication.getId());
+        return loanApplicationMapper.toResponse(updatedApplication);
+    }
+
+    @Transactional
+    public void deleteLoanApplicationById(Long id) {
+        log.info("Deleting loan application with ID: {}", id);
+        LoanApplication loanApplication = findLoanApplicationById(id);
+        loanApplicationRepository.delete(loanApplication);
+        log.info("Loan application deleted successfully");
+    }
+
 }

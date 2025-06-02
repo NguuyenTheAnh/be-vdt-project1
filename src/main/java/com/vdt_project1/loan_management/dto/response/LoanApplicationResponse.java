@@ -11,17 +11,18 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class LoanProductResponse {
+public class LoanApplicationResponse {
     Long id;
-    String name;
-    String description;
-    Double interestRate;
-    Long minAmount;
-    Long maxAmount;
-    Integer minTerm;
-    Integer maxTerm;
-    LoanProductStatus status;
-    String requiredDocuments;
+    Long requestedAmount;
+    Integer requestedTerm;
+    String personalInfo;
+    String status; // LoanApplicationStatus
+    Long disbursedAmount;
+    LocalDateTime disbursedDate;
+    String internalNotes;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    LoanProductResponse loanProduct; // Optional, if you want to include product details
+    UserResponse user; // Optional, if you want to include user details
 }

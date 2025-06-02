@@ -1,6 +1,7 @@
 package com.vdt_project1.loan_management.entity;
 
 import com.vdt_project1.loan_management.enums.LoanProductStatus;
+import com.vdt_project1.loan_management.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,49 +11,36 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "loan_products")
-public class LoanProduct {
+@Table(name = "notifications")
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "product_id")
+    @Column(name = "notification_id")
     Long id;
 
-    @Column(name = "name", nullable = false, length = 100)
-    String name;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    User user;
 
-    @Column(name = "description")
-    String description;
+    @ManyToOne
+    @JoinColumn(name = "application_id", nullable = true)
+    LoanApplication loanApplication;
 
-    @Column(name = "interest_rate", nullable = false)
-    Double interestRate;
+    @Column(name = "message", nullable = false)
+    String message;
 
-    @Column(name = "min_amount", nullable = false)
-    Long minAmount;
-
-    @Column(name = "max_amount", nullable = false)
-    Long maxAmount;
-
-    @Column(name = "min_term", nullable = false)
-    Integer minTerm;
-
-    @Column(name = "max_term", nullable = false)
-    Integer maxTerm;
+    @Column(name = "is_read", nullable = false)
+    Boolean isRead = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 50)
-    @Builder.Default
-    LoanProductStatus status = LoanProductStatus.ACTIVE;
-
-    @Column(name = "required_documents", nullable = false)
-    String requiredDocuments;
+    @Column(name = "notification_type", nullable = false, length = 50)
+    NotificationType notificationType;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
-    @Column(name = "updated_at")
-    LocalDateTime updatedAt;
 }

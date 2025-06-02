@@ -1,5 +1,6 @@
 package com.vdt_project1.loan_management.exception;
 
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import org.springframework.http.HttpStatusCode;
 
@@ -22,7 +23,31 @@ public enum ErrorCode {
             HttpStatusCode.valueOf(400)),
     INVALID_LOAN_PRODUCT_DOCUMENTS(2004, "At least one required document must be specified",
             HttpStatusCode.valueOf(400)),
-            ;
+    INVALID_LOAN_PRODUCT_MIN_INTEREST_RATE(2006, "Interest rate must be between {min} and {max}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_MAX_INTEREST_RATE(2005, "Interest rate must be between {min} and {max}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_NAME(2007, "Loan product name must be at least {min} characters long",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_MIN_AMOUNT(2008, "Minimum amount must be at least {min}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_MAX_AMOUNT(2009, "Maximum amount must be at least {min}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_MIN_TERM(2010, "Minimum term must be at least {min}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_PRODUCT_MAX_TERM(2011, "Maximum term must be at least {min}",
+            HttpStatusCode.valueOf(400)),
+    LOAN_APPLICATION_NOT_FOUND(3001, "Loan application not found",
+            HttpStatusCode.valueOf(404)),
+    INVALID_LOAN_APPLICATION_AMOUNT(3002, "Requested amount must be between {min} and {max}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_APPLICATION_TERM(3003, "Requested term must be between {min} and {max}",
+            HttpStatusCode.valueOf(400)),
+    INVALID_LOAN_APPLICATION_PERSONAL_INFO(3004, "Personal information must be at least {min} characters long",
+            HttpStatusCode.valueOf(400)),
+    NOTIFICATION_NOT_FOUND(4001, "Notification not found", HttpStatusCode.valueOf(404)),
+    DOCUMENT_NOT_FOUND(5001, "Document not found", HttpStatusCode.valueOf(404)),
+    ;
 
     private int code;
     private String message;
