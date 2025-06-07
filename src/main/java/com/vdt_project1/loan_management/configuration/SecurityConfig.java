@@ -35,6 +35,7 @@ public class SecurityConfig {
             "/auth/logout",
             "/auth/refresh",
             "/auth/password-reset/**",
+            "/auth/account-activation/**",
             "/email/send",
     };
     private final String[] PUBLIC_ENDPOINTS_GET = {

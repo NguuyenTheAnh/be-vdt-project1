@@ -12,6 +12,7 @@ import com.vdt_project1.loan_management.dto.response.IntrospectResponse;
 import com.vdt_project1.loan_management.entity.InvalidatedToken;
 import com.vdt_project1.loan_management.entity.User;
 import com.vdt_project1.loan_management.entity.VerificationToken;
+import com.vdt_project1.loan_management.enums.AccountStatus;
 import com.vdt_project1.loan_management.enums.VerificationTokenType;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
@@ -203,11 +204,53 @@ public class AuthenticationService {
         return null;
     }
 
+    public String sendVerificationEmailAccountActivation(String email) throws MessagingException {
+        log.info("Sending verification email to: {}", email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        String verificationToken = UUID.randomUUID().toString();
+        emailService.sendHtmlTemplateEmail(
+                user.getEmail(),
+                "Xác thực tài khoản - LoanConv",
+                user.getFullName(),
+                verificationToken
+        );
+        VerificationTokenRequest verificationTokenRequest = VerificationTokenRequest.builder()
+                .userId(user.getId())
+                .uuid(verificationToken)
+                .type(VerificationTokenType.ACCOUNT_ACTIVATION)
+                .build();
+
+        verificationTokenService.createVerificationToken(verificationTokenRequest);
+
+        return null;
+    }
+
     public Boolean isValidPasswordResetToken(String uuid) {
         log.info("Checking if password reset token is verified for UUID: {}", uuid);
         VerificationToken verificationToken = verificationTokenService.findVerificationTokenByUuid(uuid);
 
         if (verificationToken.getType() != VerificationTokenType.PASSWORD_RESET) {
+            throw new AppException(ErrorCode.INVALID_VERIFICATION_TOKEN_TYPE);
+        }
+
+        if(verificationToken.getExpiresAt() == null || verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.VERIFICATION_TOKEN_EXPIRED);
+        }
+
+        if (!verificationToken.getVerified()) {
+            return true;
+        } else {
+            throw new AppException(ErrorCode.VERIFICATION_TOKEN_ALREADY_VERIFIED);
+        }
+    }
+
+    public Boolean isValidAccountActivationToken(String uuid) {
+        log.info("Checking if account activation token is verified for UUID: {}", uuid);
+        VerificationToken verificationToken = verificationTokenService.findVerificationTokenByUuid(uuid);
+
+        if (verificationToken.getType() != VerificationTokenType.ACCOUNT_ACTIVATION) {
             throw new AppException(ErrorCode.INVALID_VERIFICATION_TOKEN_TYPE);
         }
 
@@ -230,6 +273,17 @@ public class AuthenticationService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         String encodedPassword = passwordEncoder.encode(request.getNewPassword());
         user.setPassword(encodedPassword);
+        userRepository.save(user);
+
+        verificationTokenService.updateVerificationTokenVerified(request.getToken());
+    }
+
+    public void activateAccount(ActivateAccountRequest request) {
+        log.info("Activating account for user with email: {}", request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        user.setAccountStatus(AccountStatus.ACTIVE);
         userRepository.save(user);
 
         verificationTokenService.updateVerificationTokenVerified(request.getToken());

@@ -87,4 +87,26 @@ public class AuthenticationController {
                 .data(null)
                 .build();
     }
+
+    @PostMapping("/account-activation/email/{email}")
+    ApiResponse<String> sendVerificationEmailAccountActivation(@PathVariable String email) throws MessagingException {
+        return ApiResponse.<String>builder()
+                .data(authenticationService.sendVerificationEmailAccountActivation(email))
+                .build();
+    }
+
+    @PostMapping("/account-activation/token/{token}")
+    ApiResponse<Boolean> isValidAccountActivationToken(@PathVariable String token) {
+        return ApiResponse.<Boolean>builder()
+                .data(authenticationService.isValidAccountActivationToken(token))
+                .build();
+    }
+
+    @PostMapping("/account-activation")
+    ApiResponse<Void> activateAccount(@RequestBody ActivateAccountRequest request) {
+        authenticationService.activateAccount(request);
+        return ApiResponse.<Void>builder()
+                .data(null)
+                .build();
+    }
 }
