@@ -25,6 +25,7 @@ public class LoanProductController {
         LoanProductService loanProductService;
 
         @PostMapping
+        @PreAuthorize("hasAuthority('POST_LOAN_PRODUCTS_CREATE')")
         public ApiResponse<LoanProductResponse> createLoanProduct(@Valid @RequestBody LoanProductRequest request) {
                 log.info("Creating new loan product: {}", request.getName());
                 return ApiResponse.<LoanProductResponse>builder()
@@ -33,6 +34,7 @@ public class LoanProductController {
         }
 
         @GetMapping
+        @PreAuthorize("hasAuthority('GET_LOAN_PRODUCTS_ALL')")
         public ApiResponse<Page<LoanProductResponse>> getAllLoanProducts(
                         @RequestParam(required = false) String name,
                         @RequestParam(required = false) String status,
@@ -44,6 +46,7 @@ public class LoanProductController {
         }
 
         @GetMapping("/{id}")
+        @PreAuthorize("hasAuthority('GET_LOAN_PRODUCTS_BY_ID')")
         public ApiResponse<LoanProductResponse> getLoanProductById(@PathVariable Long id) {
                 log.info("Fetching loan product with ID: {}", id);
                 return ApiResponse.<LoanProductResponse>builder()
@@ -52,6 +55,7 @@ public class LoanProductController {
         }
 
         @PutMapping("/{id}")
+        @PreAuthorize("hasAuthority('PUT_LOAN_PRODUCTS_UPDATE_BY_ID')")
         public ApiResponse<LoanProductResponse> updateLoanProduct(
                         @PathVariable Long id,
                         @Valid @RequestBody LoanProductRequest request) {
@@ -62,6 +66,7 @@ public class LoanProductController {
         }
 
         @PatchMapping("/{id}/status")
+        @PreAuthorize("hasAuthority('PATCH_LOAN_PRODUCTS_UPDATE_STATUS_BY_ID')")
         public ApiResponse<LoanProductResponse> changeStatus(
                         @PathVariable Long id,
                         @RequestParam LoanProductStatus status) {

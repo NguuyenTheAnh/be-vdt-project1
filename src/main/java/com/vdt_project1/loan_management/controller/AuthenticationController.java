@@ -12,6 +12,7 @@ import com.vdt_project1.loan_management.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -60,6 +61,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/my-profile")
+    @PreAuthorize("hasAuthority('GET_AUTH_MY_PROFILE')")
     ApiResponse<UserResponse> getMyProfile() {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.getMyProfile())

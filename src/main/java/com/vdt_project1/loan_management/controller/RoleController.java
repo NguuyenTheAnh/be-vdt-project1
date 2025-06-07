@@ -23,6 +23,7 @@ public class RoleController {
     RoleService roleService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('POST_ROLES_CREATE')")
     ApiResponse<RoleResponse> createRole(@RequestBody RoleRequest roleRequest) {
         return ApiResponse.<RoleResponse>builder()
                 .data(roleService.createRole(roleRequest))
@@ -30,6 +31,7 @@ public class RoleController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAuthority('GET_ROLES_ALL')")
     ApiResponse<Page<RoleResponse>> getAllRoles(Pageable pageable) {
         return ApiResponse.<Page<RoleResponse>>builder()
                 .data   (roleService.getAllRoles(pageable))
@@ -37,6 +39,7 @@ public class RoleController {
     }
 
     @PatchMapping("/{roleName}")
+    @PreAuthorize("hasAuthority('PATCH_ROLES_UPDATE_BY_NAME')")
     ApiResponse<RoleResponse> updateRole(@PathVariable("roleName") String roleName,
             @RequestBody RoleRequest roleRequest) {
         return ApiResponse.<RoleResponse>builder()
@@ -45,6 +48,7 @@ public class RoleController {
     }
 
     @DeleteMapping("/{roleName}")
+    @PreAuthorize("hasAuthority('DELETE_ROLES_BY_NAME')")
     ApiResponse<Void> deleteRole(@PathVariable("roleName") String roleName) {
         roleService.deleteRole(roleName);
         return ApiResponse.<Void>builder()

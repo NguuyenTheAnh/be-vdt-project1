@@ -10,13 +10,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-// CREATE TABLE "documents" (
-// "document_id" bigserial PRIMARY KEY,
-// "application_id" bigint NOT NULL,
-// "document_type" varchar(50) NOT NULL,
-// "file_name" varchar(255) NOT NULL,
-// "uploaded_at" timestamp without time zone
-// );
 public class DocumentResponse {
     Long id;
     DocumentLoanApplicationDto loanApplication; // Using simplified DTO to prevent circular references

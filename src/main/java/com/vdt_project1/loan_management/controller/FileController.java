@@ -8,6 +8,7 @@ import com.vdt_project1.loan_management.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,6 +26,7 @@ public class FileController {
     FileService fileService;
 
     @PostMapping("/upload")
+    @PreAuthorize("hasAuthority('POST_FILES_UPLOAD')")
     public ApiResponse<UploadFileResponse> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             UploadFileResponse response = fileService.storeFile(file);

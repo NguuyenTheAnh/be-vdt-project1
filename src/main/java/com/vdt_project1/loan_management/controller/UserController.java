@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping()
+    @PreAuthorize("hasAuthority('POST_USERS_CREATE')")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.createUser(request))
@@ -32,6 +34,7 @@ public class UserController {
     }
 
     @GetMapping()
+    @PreAuthorize("hasAuthority('GET_USERS_ALL')")
     ApiResponse<Page<UserResponse>> getUsers(Pageable pageable) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("User {} is accessing the getUsers endpoint", authentication.getName());
@@ -42,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('GET_USERS_BY_ID')")
     ApiResponse<UserResponse> getUserById(@PathVariable("id") Long id) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.getUserById(id))
@@ -49,6 +53,7 @@ public class UserController {
     }
 
     @PatchMapping
+    @PreAuthorize("hasAuthority('PATCH_USERS_UPDATE_CURRENT_USER_PROFILE')")
     ApiResponse<UserResponse> updateUserProfile(@RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.updateMyProfile(request))
@@ -56,6 +61,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('PATCH_USERS_UPDATE_BY_ID')")
     ApiResponse<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.updateUser(id, request))
@@ -63,6 +69,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DELETE_USERS_BY_ID')")
     ApiResponse<Void> deleteUserById(@PathVariable("id") Long id) {
         userService.deleteUserById(id);
         return ApiResponse.<Void>builder()

@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -25,6 +27,7 @@ public class DocumentController {
     DocumentService documentService;
 
     @PostMapping
+    @PreAuthorize("hasAuthority('POST_DOCUMENTS_CREATE')")
     public ApiResponse<DocumentResponse> createDocument(@Valid @RequestBody DocumentRequest request) {
         log.info("Creating a new document");
         DocumentResponse response = documentService.createDocument(request);
@@ -34,6 +37,7 @@ public class DocumentController {
     }
 
     @GetMapping("/application")
+    @PreAuthorize("hasAuthority('GET_DOCUMENTS_BY_APPLICATION_ID')")
     public ApiResponse<Page<DocumentResponse>> getDocument(
             @RequestParam Long applicationId,
             Pageable pageable
@@ -44,6 +48,7 @@ public class DocumentController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('GET_DOCUMENTS_BY_ID')")
     public ApiResponse<DocumentResponse> getDocumentById(@PathVariable Long id) {
         log.info("Fetching document with ID: {}", id);
         DocumentResponse response = documentService.getDocumentById(id);
@@ -53,6 +58,7 @@ public class DocumentController {
     }
 
     @PatchMapping
+    @PreAuthorize("hasAuthority('PATCH_DOCUMENTS_UPDATE_FILE_CONTENT')")
     public ApiResponse<Void> updateDocumentFle(@RequestBody DocumentUpdateRequest request) {
         log.info("Updating document file with request: {}", request);
         documentService.updateDocumentFile(request);
@@ -62,6 +68,7 @@ public class DocumentController {
     }
 
     @PatchMapping("/{id}")
+    @PreAuthorize("hasAuthority('PATCH_DOCUMENTS_UPDATE_METADATA_BY_ID')")
     public ApiResponse<DocumentResponse> updateDocument(
             @PathVariable Long id,
             @Valid @RequestBody DocumentRequest request
@@ -74,6 +81,7 @@ public class DocumentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('DELETE_DOCUMENTS_BY_ID')")
     public ApiResponse<Void> deleteDocument(@PathVariable Long id) {
         log.info("Deleting document with ID: {}", id);
         documentService.deleteDocumentById(id);

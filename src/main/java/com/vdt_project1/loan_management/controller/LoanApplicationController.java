@@ -34,6 +34,7 @@ public class LoanApplicationController {
         LoanApplicationService loanApplicationService;
 
         @PostMapping
+        @PreAuthorize("hasAuthority('POST_LOAN_APPLICATIONS_CREATE')")
         public ApiResponse<LoanApplicationResponse> createLoanApplication(@Valid @RequestBody LoanApplicationRequest request) {
                 LoanApplicationResponse response = loanApplicationService.createLoanApplication(request);
                 return ApiResponse.<LoanApplicationResponse>builder()
@@ -42,6 +43,7 @@ public class LoanApplicationController {
         }
 
         @GetMapping
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_ALL')")
         public ApiResponse<Page<LoanApplicationResponse>> getAllLoanApplications(Pageable pageable) {
                 log.info("Fetching all loan applications with pagination");
                 Page<LoanApplicationResponse> response = loanApplicationService.getAllLoanApplications(pageable);
@@ -51,6 +53,7 @@ public class LoanApplicationController {
         }
 
         @GetMapping("/required-documents/{id}")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_REQUIRED_DOCUMENTS_BY_LOAN_PRODUCT_ID')")
         public ApiResponse<Map<String, Object>> getRequiredDocuments(@PathVariable Long id) {
                 log.info("Fetching required documents for loan product with ID: {}", id);
                 Map<String, Object> response = loanApplicationService.getRequiredDocument(id);
@@ -60,6 +63,7 @@ public class LoanApplicationController {
         }
 
         @GetMapping("/user")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_CURRENT_USER_ALL')")
         public ApiResponse<Page<LoanApplicationResponse>> getMyLoanApplications(Pageable pageable) {
                 log.info("Fetching loan applications for the current user");
                 Page<LoanApplicationResponse> response = loanApplicationService.getAllLoanApplicationsOfAUser(pageable);
@@ -69,6 +73,7 @@ public class LoanApplicationController {
         }
 
         @GetMapping("/{id}")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_BY_ID')")
         public ApiResponse<LoanApplicationResponse> getLoanApplicationById(@PathVariable Long id) {
                 log.info("Fetching loan application with ID: {}", id);
                 LoanApplicationResponse response = loanApplicationService.getLoanApplicationById(id);
@@ -78,6 +83,7 @@ public class LoanApplicationController {
         }
 
         @PatchMapping("/{id}")
+        @PreAuthorize("hasAuthority('PATCH_LOAN_APPLICATIONS_UPDATE_BY_ID')")
         public ApiResponse<LoanApplicationResponse> updateLoanApplication(@PathVariable Long id, @Valid @RequestBody LoanApplicationRequest request) {
                 log.info("Updating loan application with ID: {}", id);
                 LoanApplicationResponse response = loanApplicationService.updateLoanApplication(id, request);
@@ -87,6 +93,7 @@ public class LoanApplicationController {
         }
 
         @DeleteMapping("/{id}")
+        @PreAuthorize("hasAuthority('DELETE_LOAN_APPLICATIONS_BY_ID')")
         public ApiResponse<Void> deleteLoanApplicationById(@PathVariable Long id) {
                 log.info("Deleting loan application with ID: {}", id);
                 loanApplicationService.deleteLoanApplicationById(id);
