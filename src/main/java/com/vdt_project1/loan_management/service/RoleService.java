@@ -26,7 +26,6 @@ public class RoleService {
     PermissionRepository permissionRepository;
     RoleMapper roleMapper;
 
-    @PreAuthorize("hasRole('ADMIN')")
     public RoleResponse createRole(RoleRequest roleRequest) {
         Role role = roleMapper.toRole(roleRequest);
 
@@ -39,8 +38,8 @@ public class RoleService {
     }
 
     public Page<RoleResponse> getAllRoles(Pageable pageable) {
-      Page<Role> rolesPage = roleRepository.findAll(pageable);
-      return rolesPage.map(roleMapper::toRoleResponse);
+        Page<Role> rolesPage = roleRepository.findAll(pageable);
+        return rolesPage.map(roleMapper::toRoleResponse);
     }
 
     public RoleResponse updateRole(String roleName, RoleRequest roleRequest) {

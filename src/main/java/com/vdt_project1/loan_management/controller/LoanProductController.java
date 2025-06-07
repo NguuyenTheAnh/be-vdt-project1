@@ -25,7 +25,6 @@ public class LoanProductController {
         LoanProductService loanProductService;
 
         @PostMapping
-        @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
         public ApiResponse<LoanProductResponse> createLoanProduct(@Valid @RequestBody LoanProductRequest request) {
                 log.info("Creating new loan product: {}", request.getName());
                 return ApiResponse.<LoanProductResponse>builder()
@@ -53,7 +52,6 @@ public class LoanProductController {
         }
 
         @PutMapping("/{id}")
-        @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
         public ApiResponse<LoanProductResponse> updateLoanProduct(
                         @PathVariable Long id,
                         @Valid @RequestBody LoanProductRequest request) {
@@ -64,7 +62,6 @@ public class LoanProductController {
         }
 
         @PatchMapping("/{id}/status")
-        @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER')")
         public ApiResponse<LoanProductResponse> changeStatus(
                         @PathVariable Long id,
                         @RequestParam LoanProductStatus status) {

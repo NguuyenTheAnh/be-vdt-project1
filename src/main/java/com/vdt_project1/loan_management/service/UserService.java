@@ -64,7 +64,6 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<UserResponse> getUsers(Pageable pageable) {
         Page<User> users = userRepository.findAll(pageable);
         if (users.isEmpty()) {
@@ -105,7 +104,6 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    @PostAuthorize(" returnObject.email == authentication.name or hasRole('ADMIN')")
     public UserResponse getUserById(Long id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id)));
