@@ -15,6 +15,7 @@ public enum ErrorCode {
     USER_NOT_EXIST(1004, "User does not exist", HttpStatusCode.valueOf(404)),
     UNAUTHENTICATED(1005, "User is not authenticated", HttpStatusCode.valueOf(401)),
     UNAUTHORIZED(1006, "Unauthorized access", HttpStatusCode.valueOf(403)),
+    USER_ACCOUNT_INACTIVE (1007, "User account is inactive", HttpStatusCode.valueOf(403)),
     INVALID_DOB(1007, "Your age must be at least {min}", HttpStatusCode.valueOf(400)),
     ROLE_NOT_EXIST(1008, "Role does not exist", HttpStatusCode.valueOf(404)),
     LOAN_PRODUCT_NOT_FOUND(2001, "Loan product not found", HttpStatusCode.valueOf(404)),

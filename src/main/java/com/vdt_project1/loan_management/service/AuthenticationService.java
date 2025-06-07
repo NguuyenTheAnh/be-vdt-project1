@@ -67,6 +67,11 @@ public class AuthenticationService {
         if (!isAuthenticated) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
+        // check status of user account
+        if(user.getAccountStatus() == null || user.getAccountStatus() != AccountStatus.ACTIVE) {
+            throw new AppException(ErrorCode.USER_ACCOUNT_INACTIVE);
+        }
+
         var token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
