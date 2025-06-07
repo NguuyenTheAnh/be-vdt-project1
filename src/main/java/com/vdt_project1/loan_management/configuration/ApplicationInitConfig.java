@@ -2,6 +2,7 @@ package com.vdt_project1.loan_management.configuration;
 
 import com.vdt_project1.loan_management.entity.User;
 import com.vdt_project1.loan_management.entity.Role;
+import com.vdt_project1.loan_management.enums.AccountStatus;
 import com.vdt_project1.loan_management.repository.RoleRepository;
 import com.vdt_project1.loan_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class ApplicationInitConfig {
                 User user = User.builder()
                         .email("admin@gmail.com")
                         .password(passwordEncoder.encode("admin"))
+                        .accountStatus(AccountStatus.ACTIVE)
                         .role(role)
                         .build();
 

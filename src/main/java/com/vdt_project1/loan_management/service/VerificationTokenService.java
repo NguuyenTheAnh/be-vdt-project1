@@ -41,7 +41,7 @@ public class VerificationTokenService {
         verificationToken.setUser(user);
         verificationToken.setVerified(false);
         verificationToken.setCreatedAt(LocalDateTime.now());
-        verificationToken.setExpiresAt(LocalDateTime.now().plusSeconds(30));
+        verificationToken.setExpiresAt(LocalDateTime.now().plusSeconds(60));
 
         verificationToken = verificationTokenRepository.save(verificationToken);
         return verificationTokenMapper.toResponse(verificationToken);
