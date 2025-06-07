@@ -22,7 +22,7 @@ public class NotificationController {
     NotificationService notificationService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('POST_NOTIFICATIONS_CREATE')")
+    @PreAuthorize("hasAuthority('POST_NOTIFICATIONS_CREATE') or hasRole('ADMIN')")
     public ApiResponse<NotificationResponse> createNotification(@Valid @RequestBody NotificationRequest request) {
         return ApiResponse.<NotificationResponse>builder()
                 .data(notificationService.createNotification(request))
@@ -30,7 +30,7 @@ public class NotificationController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('GET_NOTIFICATIONS_ALL')")
+    @PreAuthorize("hasAuthority('GET_NOTIFICATIONS_ALL') or hasRole('ADMIN')")
     public ApiResponse<Page<NotificationResponse>> getAllNotifications(Pageable pageable) {
         return ApiResponse.<Page<NotificationResponse>>builder()
                 .data(notificationService.getAllNotifications(pageable))
@@ -38,7 +38,7 @@ public class NotificationController {
     }
 
     @GetMapping("/unread-count")
-    @PreAuthorize("hasAuthority('GET_NOTIFICATIONS_UNREAD_COUNT_CURRENT_USER')")
+    @PreAuthorize("hasAuthority('GET_NOTIFICATIONS_UNREAD_COUNT_CURRENT_USER') or hasRole('ADMIN')")
     public ApiResponse<Long> getUnreadNotificationsCount() {
         log.info("Received request to get unread notifications count");
         long count = notificationService.getUnreadNotificationsCount();
@@ -49,7 +49,7 @@ public class NotificationController {
     }
 
     @PostMapping("/mark-all-as-read")
-    @PreAuthorize("hasAuthority('POST_NOTIFICATIONS_MARK_ALL_AS_READ_CURRENT_USER')")
+    @PreAuthorize("hasAuthority('POST_NOTIFICATIONS_MARK_ALL_AS_READ_CURRENT_USER') or hasRole('ADMIN')")
     public ApiResponse<Void> markAllNotificationsAsRead() {
         log.info("Received request to mark all notifications as read");
         notificationService.markAllNotificationsAsRead();
@@ -60,7 +60,7 @@ public class NotificationController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('GET_NOTIFICATIONS_BY_ID')")
+    @PreAuthorize("hasAuthority('GET_NOTIFICATIONS_BY_ID') or hasRole('ADMIN')")
     public ApiResponse<NotificationResponse> getNotificationById(@PathVariable Long id) {
         return ApiResponse.<NotificationResponse>builder()
                 .data(notificationService.getNotificationById(id))
@@ -68,7 +68,7 @@ public class NotificationController {
     }
 
     @PatchMapping("/{id}")
-    @PreAuthorize("hasAuthority('PATCH_NOTIFICATIONS_UPDATE_BY_ID')")
+    @PreAuthorize("hasAuthority('PATCH_NOTIFICATIONS_UPDATE_BY_ID') or hasRole('ADMIN')")
     public ApiResponse<NotificationResponse> updateNotification(@PathVariable Long id,
             @Valid @RequestBody NotificationRequest request) {
         return ApiResponse.<NotificationResponse>builder()
@@ -77,7 +77,7 @@ public class NotificationController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('DELETE_NOTIFICATIONS_BY_ID')")
+    @PreAuthorize("hasAuthority('DELETE_NOTIFICATIONS_BY_ID') or hasRole('ADMIN')")
     public ApiResponse<Void> deleteNotification(@PathVariable Long id) {
         notificationService.deleteNotificationById(id);
         return ApiResponse.<Void>builder()

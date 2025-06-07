@@ -26,7 +26,7 @@ public class FileController {
     FileService fileService;
 
     @PostMapping("/upload")
-    @PreAuthorize("hasAuthority('POST_FILES_UPLOAD')")
+    @PreAuthorize("hasAuthority('POST_FILES_UPLOAD') or hasRole('ADMIN')")
     public ApiResponse<UploadFileResponse> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
             UploadFileResponse response = fileService.storeFile(file);

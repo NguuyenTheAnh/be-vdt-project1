@@ -61,24 +61,24 @@ public class AuthenticationController {
     }
 
     @GetMapping("/my-profile")
-    @PreAuthorize("hasAuthority('GET_AUTH_MY_PROFILE')")
+    @PreAuthorize("hasAuthority('GET_AUTH_MY_PROFILE') or hasRole('ADMIN')")
     ApiResponse<UserResponse> getMyProfile() {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.getMyProfile())
                 .build();
     }
 
-        @PostMapping("/password-reset/email/{email}")
-    ApiResponse<String> sendVerificationEmailPasswordReset(@PathVariable String email )  throws MessagingException {
+    @PostMapping("/password-reset/email/{email}")
+    ApiResponse<String> sendVerificationEmailPasswordReset(@PathVariable String email) throws MessagingException {
         return ApiResponse.<String>builder()
                 .data(authenticationService.sendVerificationEmailPasswordReset(email))
                 .build();
     }
 
     @PostMapping("/password-reset/token/{token}")
-    ApiResponse<Boolean> isValidPasswordResetToken(@PathVariable String token ) {
+    ApiResponse<Boolean> isValidPasswordResetToken(@PathVariable String token) {
         return ApiResponse.<Boolean>builder()
-                .data(authenticationService.isValidPasswordResetToken(token ))
+                .data(authenticationService.isValidPasswordResetToken(token))
                 .build();
     }
 

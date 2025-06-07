@@ -34,71 +34,73 @@ public class LoanApplicationController {
         LoanApplicationService loanApplicationService;
 
         @PostMapping
-        @PreAuthorize("hasAuthority('POST_LOAN_APPLICATIONS_CREATE')")
-        public ApiResponse<LoanApplicationResponse> createLoanApplication(@Valid @RequestBody LoanApplicationRequest request) {
+        @PreAuthorize("hasAuthority('POST_LOAN_APPLICATIONS_CREATE') or hasRole('ADMIN')")
+        public ApiResponse<LoanApplicationResponse> createLoanApplication(
+                        @Valid @RequestBody LoanApplicationRequest request) {
                 LoanApplicationResponse response = loanApplicationService.createLoanApplication(request);
                 return ApiResponse.<LoanApplicationResponse>builder()
-                        .data(response)
-                        .build();
+                                .data(response)
+                                .build();
         }
 
         @GetMapping
-        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_ALL')")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_ALL') or hasRole('ADMIN')")
         public ApiResponse<Page<LoanApplicationResponse>> getAllLoanApplications(Pageable pageable) {
                 log.info("Fetching all loan applications with pagination");
                 Page<LoanApplicationResponse> response = loanApplicationService.getAllLoanApplications(pageable);
                 return ApiResponse.<Page<LoanApplicationResponse>>builder()
-                        .data(response)
-                        .build();
+                                .data(response)
+                                .build();
         }
 
         @GetMapping("/required-documents/{id}")
-        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_REQUIRED_DOCUMENTS_BY_LOAN_PRODUCT_ID')")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_REQUIRED_DOCUMENTS_BY_LOAN_PRODUCT_ID') or hasRole('ADMIN')")
         public ApiResponse<Map<String, Object>> getRequiredDocuments(@PathVariable Long id) {
                 log.info("Fetching required documents for loan product with ID: {}", id);
                 Map<String, Object> response = loanApplicationService.getRequiredDocument(id);
                 return ApiResponse.<Map<String, Object>>builder()
-                        .data(response)
-                        .build();
+                                .data(response)
+                                .build();
         }
 
         @GetMapping("/user")
-        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_CURRENT_USER_ALL')")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_CURRENT_USER_ALL') or hasRole('ADMIN')")
         public ApiResponse<Page<LoanApplicationResponse>> getMyLoanApplications(Pageable pageable) {
                 log.info("Fetching loan applications for the current user");
                 Page<LoanApplicationResponse> response = loanApplicationService.getAllLoanApplicationsOfAUser(pageable);
                 return ApiResponse.<Page<LoanApplicationResponse>>builder()
-                        .data(response)
-                        .build();
+                                .data(response)
+                                .build();
         }
 
         @GetMapping("/{id}")
-        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_BY_ID')")
+        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_BY_ID') or hasRole('ADMIN')")
         public ApiResponse<LoanApplicationResponse> getLoanApplicationById(@PathVariable Long id) {
                 log.info("Fetching loan application with ID: {}", id);
                 LoanApplicationResponse response = loanApplicationService.getLoanApplicationById(id);
                 return ApiResponse.<LoanApplicationResponse>builder()
-                        .data(response)
-                        .build();
+                                .data(response)
+                                .build();
         }
 
         @PatchMapping("/{id}")
-        @PreAuthorize("hasAuthority('PATCH_LOAN_APPLICATIONS_UPDATE_BY_ID')")
-        public ApiResponse<LoanApplicationResponse> updateLoanApplication(@PathVariable Long id, @Valid @RequestBody LoanApplicationRequest request) {
+        @PreAuthorize("hasAuthority('PATCH_LOAN_APPLICATIONS_UPDATE_BY_ID') or hasRole('ADMIN')")
+        public ApiResponse<LoanApplicationResponse> updateLoanApplication(@PathVariable Long id,
+                        @Valid @RequestBody LoanApplicationRequest request) {
                 log.info("Updating loan application with ID: {}", id);
                 LoanApplicationResponse response = loanApplicationService.updateLoanApplication(id, request);
                 return ApiResponse.<LoanApplicationResponse>builder()
-                        .data(response)
-                        .build();
+                                .data(response)
+                                .build();
         }
 
         @DeleteMapping("/{id}")
-        @PreAuthorize("hasAuthority('DELETE_LOAN_APPLICATIONS_BY_ID')")
+        @PreAuthorize("hasAuthority('DELETE_LOAN_APPLICATIONS_BY_ID') or hasRole('ADMIN')")
         public ApiResponse<Void> deleteLoanApplicationById(@PathVariable Long id) {
                 log.info("Deleting loan application with ID: {}", id);
                 loanApplicationService.deleteLoanApplicationById(id);
                 return ApiResponse.<Void>builder()
-                        .data(null)
-                        .build();
+                                .data(null)
+                                .build();
         }
 }

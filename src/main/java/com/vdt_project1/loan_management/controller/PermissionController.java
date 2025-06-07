@@ -23,7 +23,7 @@ public class PermissionController {
     PermissionService permissionService;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('POST_PERMISSIONS_CREATE')")
+    @PreAuthorize("hasAuthority('POST_PERMISSIONS_CREATE') or hasRole('ADMIN')")
     ApiResponse<PermissionResponse> createPermission(@RequestBody PermissionRequest request) {
         return ApiResponse.<PermissionResponse>builder()
                 .data(permissionService.createPermission(request))
@@ -31,7 +31,7 @@ public class PermissionController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('GET_PERMISSIONS_ALL')")
+    @PreAuthorize("hasAuthority('GET_PERMISSIONS_ALL') or hasRole('ADMIN')")
     ApiResponse<Page<PermissionResponse>> getPermissions(Pageable pageable) {
         return ApiResponse.<Page<PermissionResponse>>builder()
                 .data(permissionService.getAllPermissions(pageable))
@@ -39,7 +39,7 @@ public class PermissionController {
     }
 
     @DeleteMapping("/{permission}")
-    @PreAuthorize("hasAuthority('DELETE_PERMISSIONS_BY_NAME')")
+    @PreAuthorize("hasAuthority('DELETE_PERMISSIONS_BY_NAME') or hasRole('ADMIN')")
     ApiResponse<Void> deletePermission(@PathVariable String permission) {
         permissionService.deletePermission(permission);
         return ApiResponse.<Void>builder()
