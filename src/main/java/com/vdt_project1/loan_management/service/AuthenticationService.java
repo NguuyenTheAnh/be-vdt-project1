@@ -183,7 +183,7 @@ public class AuthenticationService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
         String verificationToken = UUID.randomUUID().toString();
-
+        
 
         return ApiResponse.<String>builder()
                 .message("Verification email sent successfully")

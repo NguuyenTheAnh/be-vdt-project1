@@ -24,7 +24,7 @@ public class EmailController {
                 "anhnguyenthe29112004@gmail.com",
                 "Xác thực tài khoản - LoanConv",
                 "Nguyễn Thế Anh",
-                "123456"
+                "82c0ddd1-c5f2-49d8-95cc-ca08f6e55bee"
         );
         return ApiResponse.<String>builder()
                 .data("Email sent successfully")
