@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác thực tài khoản - LoanConv</title>
+</head>
+
+<body
+    style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #F5F5F5; line-height: 1.6;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <!-- Header với gradient -->
+        <div
+            style="background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%); padding: 40px 30px; text-align: center; position: relative;">
+            <!-- Logo -->
+            <div style="margin-bottom: 20px;">
+                <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; letter-spacing: 1px;">
+                    <span style="font-weight: bold;">Loan</span><span style="font-weight: 300;">Conv</span>
+                </h1>
+            </div>
+
+            <!-- Wave decoration -->
+            <div style="position: absolute; bottom: -1px; left: 0; right: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 60"
+                    style="width: 100%; height: auto; display: block;">
+                    <path fill="#ffffff" fill-opacity="1"
+                        d="M0,32L80,34.7C160,37,320,43,480,40C640,37,800,27,960,24C1120,21,1280,27,1360,29.3L1440,32L1440,60L1360,60C1280,60,1120,60,960,60C800,60,640,60,480,60C320,60,160,60,80,60L0,60Z">
+                    </path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div style="padding: 50px 30px;">
+            <!-- Greeting -->
+            <h2 style="color: #2c3e50; font-size: 28px; font-weight: 600; text-align: center; margin-bottom: 20px;"
+                th:text="'Xin chào, ' + ${name} + '!'">Xin chào!</h2>
+
+            <!-- Main message -->
+            <p style="color: #555555; font-size: 16px; text-align: center; margin-bottom: 30px;">
+                Cảm ơn bạn đã sử dụng dịch vụ <strong style="color: #E74C3C;">LoanConv</strong>. Để hoàn tất quá trình
+                xác thực tài khoản, vui lòng sử dụng mã xác thực bên dưới.
+            </p>
+
+            <!-- Verification Code Section -->
+            <div
+                style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #E74C3C;">
+                <p
+                    style="color: #6c757d; font-size: 14px; margin-bottom: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;">
+                    MÃ XÁC THỰC CỦA BẠN
+                </p>
+                <div
+                    style="background-color: #ffffff; border: 2px dashed #E74C3C; border-radius: 8px; padding: 20px; margin: 15px 0;">
+                    <p style="font-size: 32px; font-weight: bold; color: #E74C3C; margin: 0; font-family: 'Courier New', monospace; letter-spacing: 4px;"
+                        th:text="${verificationCode}">
+                        VERIFICATION_CODE
+                    </p>
+                </div>
+                <p style="color: #6c757d; font-size: 12px; margin-top: 15px;">
+                    Mã xác thực có hiệu lực trong <strong>10 phút</strong>
+                </p>
+            </div>
+
+            <!-- Security Notice -->
+            <div
+                style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <h4 style="color: #856404; font-size: 16px; margin-bottom: 10px; font-weight: 600;">
+                    Lưu ý bảo mật:
+                </h4>
+                <p style="color: #856404; font-size: 14px; margin: 0;">
+                    Mã xác thực này chỉ dành riêng cho bạn. Vui lòng không chia sẻ với bất kỳ ai khác để đảm bảo an toàn
+                    tài khoản.
+                </p>
+            </div>
+        </div> <!-- Footer -->
+        <div style="background-color: #2c3e50; color: #ffffff; padding: 30px; text-align: center;">
+            <div style="margin-bottom: 20px; text-align: center;">
+                <div
+                    style="display: inline-block; padding: 8px 16px; background-color: #E74C3C; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: bold; color: #ffffff;">
+                        <span style="font-weight: bold;">Loan</span><span style="font-weight: 300;">Conv</span>
+                    </h3>
+                </div>
+            </div>
+            <p style="margin: 5px 0 0 0; font-size: 14px; color: #bdc3c7;">
+                Giải pháp tài chính thông minh
+            </p>
+
+            <div style="border-top: 1px solid #34495e; padding-top: 20px; margin-top: 20px;">
+                <p style="margin: 0; font-size: 12px; color: #bdc3c7;">
+                    © 2025 LoanConv. Tất cả quyền được bảo lưu.
+                </p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #95a5a6;">
+                    Đây là email tự động, vui lòng không phản hồi trực tiếp.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

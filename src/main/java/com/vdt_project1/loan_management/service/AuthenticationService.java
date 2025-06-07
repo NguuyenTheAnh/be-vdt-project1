@@ -9,6 +9,7 @@ import com.vdt_project1.loan_management.dto.request.AuthenticationRequest;
 import com.vdt_project1.loan_management.dto.request.IntrospectRequest;
 import com.vdt_project1.loan_management.dto.request.InvalidatedTokenRequest;
 import com.vdt_project1.loan_management.dto.request.RefreshRequest;
+import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.AuthenticationResponse;
 import com.vdt_project1.loan_management.dto.response.IntrospectResponse;
 import com.vdt_project1.loan_management.entity.InvalidatedToken;
@@ -41,6 +42,7 @@ import java.util.UUID;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    EmailService emailService;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -175,4 +177,17 @@ public class AuthenticationService {
             log.info("Token already expired");
         }
     }
+
+    public ApiResponse<String> sendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        String verificationToken = UUID.randomUUID().toString();
+
+
+        return ApiResponse.<String>builder()
+                .message("Verification email sent successfully")
+                .build();
+    }
+
 }

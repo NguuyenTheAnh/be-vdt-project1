@@ -34,6 +34,7 @@ public class SecurityConfig {
             "/auth/introspect",
             "/auth/logout",
             "/auth/refresh",
+            "/email/send"
     };
     private final String[] PUBLIC_ENDPOINTS_GET = {
             "/loan-products/**",
