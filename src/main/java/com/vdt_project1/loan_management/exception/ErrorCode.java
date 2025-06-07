@@ -48,6 +48,8 @@ public enum ErrorCode {
             HttpStatusCode.valueOf(400)),
     NOTIFICATION_NOT_FOUND(4001, "Notification not found", HttpStatusCode.valueOf(404)),
     DOCUMENT_NOT_FOUND(5001, "Document not found", HttpStatusCode.valueOf(404)),
+    VERIFICATION_TOKEN_NOT_FOUND(6001, "Verification token not found", HttpStatusCode.valueOf(404)),
+    VERIFICATION_TOKEN_ALREADY_VERIFIED(6002, "Verification token has already been verified", HttpStatusCode.valueOf(400)),
     ;
 
     private int code;

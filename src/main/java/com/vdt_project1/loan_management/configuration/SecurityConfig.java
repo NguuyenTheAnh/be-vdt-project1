@@ -34,7 +34,7 @@ public class SecurityConfig {
             "/auth/introspect",
             "/auth/logout",
             "/auth/refresh",
-            "/email/send"
+            "/email/send",
     };
     private final String[] PUBLIC_ENDPOINTS_GET = {
             "/loan-products/**",
@@ -47,6 +47,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.GET, PUBLIC_ENDPOINTS_GET).permitAll()
                 .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS_AUTH).permitAll()
+                .requestMatchers("/verification-tokens/**").permitAll()
                 .anyRequest().authenticated());
         http.oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(customJwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter()))

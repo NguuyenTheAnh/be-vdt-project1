@@ -18,6 +18,7 @@ import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.repository.InvalidatedTokenRepository;
 import com.vdt_project1.loan_management.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -178,12 +179,17 @@ public class AuthenticationService {
         }
     }
 
-    public ApiResponse<String> sendVerificationEmail(String email) {
+    public ApiResponse<String> sendVerificationEmail(String email) throws MessagingException {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
         String verificationToken = UUID.randomUUID().toString();
-        
+        emailService.sendHtmlTemplateEmail(
+                user.getEmail(),
+                "Xác thực tài khoản - LoanConv",
+                user.getFullName(),
+                verificationToken
+        );
 
         return ApiResponse.<String>builder()
                 .message("Verification email sent successfully")
