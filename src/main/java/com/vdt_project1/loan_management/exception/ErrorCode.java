@@ -50,6 +50,8 @@ public enum ErrorCode {
     DOCUMENT_NOT_FOUND(5001, "Document not found", HttpStatusCode.valueOf(404)),
     VERIFICATION_TOKEN_NOT_FOUND(6001, "Verification token not found", HttpStatusCode.valueOf(404)),
     VERIFICATION_TOKEN_ALREADY_VERIFIED(6002, "Verification token has already been verified", HttpStatusCode.valueOf(400)),
+    INVALID_VERIFICATION_TOKEN_TYPE(6003, "Invalid verification token type", HttpStatusCode.valueOf(400)),
+    VERIFICATION_TOKEN_EXPIRED(6004, "Verification token has expired", HttpStatusCode.valueOf(400))
     ;
 
     private int code;

@@ -5,15 +5,14 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.vdt_project1.loan_management.dto.request.AuthenticationRequest;
-import com.vdt_project1.loan_management.dto.request.IntrospectRequest;
-import com.vdt_project1.loan_management.dto.request.InvalidatedTokenRequest;
-import com.vdt_project1.loan_management.dto.request.RefreshRequest;
+import com.vdt_project1.loan_management.dto.request.*;
 import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.AuthenticationResponse;
 import com.vdt_project1.loan_management.dto.response.IntrospectResponse;
 import com.vdt_project1.loan_management.entity.InvalidatedToken;
 import com.vdt_project1.loan_management.entity.User;
+import com.vdt_project1.loan_management.entity.VerificationToken;
+import com.vdt_project1.loan_management.enums.VerificationTokenType;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.repository.InvalidatedTokenRepository;
@@ -32,6 +31,7 @@ import org.springframework.util.CollectionUtils;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -44,6 +44,7 @@ public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
     EmailService emailService;
+    VerificationTokenService verificationTokenService;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -179,7 +180,8 @@ public class AuthenticationService {
         }
     }
 
-    public ApiResponse<String> sendVerificationEmail(String email) throws MessagingException {
+    public String sendVerificationEmailPasswordReset(String email) throws MessagingException {
+        log.info("Sending verification email for password reset to: {}", email);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
@@ -190,10 +192,47 @@ public class AuthenticationService {
                 user.getFullName(),
                 verificationToken
         );
-
-        return ApiResponse.<String>builder()
-                .message("Verification email sent successfully")
+        VerificationTokenRequest verificationTokenRequest = VerificationTokenRequest.builder()
+                .userId(user.getId())
+                .uuid(verificationToken)
+                .type(VerificationTokenType.PASSWORD_RESET)
                 .build();
+
+        verificationTokenService.createVerificationToken(verificationTokenRequest);
+
+        return null;
+    }
+
+    public Boolean isValidPasswordResetToken(String uuid) {
+        log.info("Checking if password reset token is verified for UUID: {}", uuid);
+        VerificationToken verificationToken = verificationTokenService.findVerificationTokenByUuid(uuid);
+
+        if (verificationToken.getType() != VerificationTokenType.PASSWORD_RESET) {
+            throw new AppException(ErrorCode.INVALID_VERIFICATION_TOKEN_TYPE);
+        }
+
+        if(verificationToken.getExpiresAt() == null || verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new AppException(ErrorCode.VERIFICATION_TOKEN_EXPIRED);
+        }
+
+        if (!verificationToken.getVerified()) {
+            return true;
+        } else {
+            throw new AppException(ErrorCode.VERIFICATION_TOKEN_ALREADY_VERIFIED);
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        log.info("Resetting password for user with email: {}", request.getEmail());
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        String encodedPassword = passwordEncoder.encode(request.getNewPassword());
+        user.setPassword(encodedPassword);
+        userRepository.save(user);
+
+        verificationTokenService.updateVerificationTokenVerified(request.getToken());
     }
 
 }

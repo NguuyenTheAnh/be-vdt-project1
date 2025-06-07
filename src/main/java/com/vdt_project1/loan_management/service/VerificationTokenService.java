@@ -29,7 +29,7 @@ public class VerificationTokenService {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     }
-    private VerificationToken findVerificationTokenByUuid(String uuid) {
+    public VerificationToken findVerificationTokenByUuid(String uuid) {
         return verificationTokenRepository.findByUuid(uuid)
                 .orElseThrow(() -> new AppException(ErrorCode.VERIFICATION_TOKEN_NOT_FOUND));
     }
@@ -41,7 +41,7 @@ public class VerificationTokenService {
         verificationToken.setUser(user);
         verificationToken.setVerified(false);
         verificationToken.setCreatedAt(LocalDateTime.now());
-        verificationToken.setExpiresAt(LocalDateTime.now().plusSeconds(10));
+        verificationToken.setExpiresAt(LocalDateTime.now().plusSeconds(30));
 
         verificationToken = verificationTokenRepository.save(verificationToken);
         return verificationTokenMapper.toResponse(verificationToken);
