@@ -6,5 +6,6 @@ public enum LoanApplicationStatus {
     REQUIRE_MORE_INFO,
     APPROVED,
     REJECTED,
-    DISBURSED
+    PARTIALLY_DISBURSED,
+    FULLY_DISBURSED
 }

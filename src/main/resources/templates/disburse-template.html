@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo giải ngân - LoanConv</title>
+</head>
+
+<body
+    style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #F5F5F5; line-height: 1.6;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+        <!-- Header với gradient -->
+        <div
+            style="background: linear-gradient(135deg, #28A745 0%, #1E7E34 100%); padding: 40px 30px; text-align: center; position: relative;">
+            <!-- Logo -->
+            <div style="margin-bottom: 20px;">
+                <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: bold; letter-spacing: 1px;">
+                    <span style="font-weight: bold;">Loan</span><span style="font-weight: 300;">Conv</span>
+                </h1>
+            </div>
+
+            <!-- Wave decoration -->
+            <div style="position: absolute; bottom: -1px; left: 0; right: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 60"
+                    style="width: 100%; height: auto; display: block;">
+                    <path fill="#ffffff" fill-opacity="1"
+                        d="M0,32L80,34.7C160,37,320,43,480,40C640,37,800,27,960,24C1120,21,1280,27,1360,29.3L1440,32L1440,60L1360,60C1280,60,1120,60,960,60C800,60,640,60,480,60C320,60,160,60,80,60L0,60Z">
+                    </path>
+                </svg>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div style="padding: 50px 30px;">
+            <!-- Greeting -->
+            <h2 style="color: #2c3e50; font-size: 28px; font-weight: 600; text-align: center; margin-bottom: 20px;"
+                th:text="'Xin chào, ' + ${name} + '!'">Xin chào!</h2>
+
+            <!-- Main message -->
+            <p style="color: #555555; font-size: 16px; text-align: center; margin-bottom: 30px;">
+                Chúng tôi xin thông báo về việc giải ngân cho khoản vay của bạn tại <strong
+                    style="color: #28A745;">LoanConv</strong>.
+            </p>
+
+            <!-- Disbursement Status Section -->
+            <div th:if="${isFullyDisbursed}"
+                style="background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-radius: 12px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #28A745;">
+                <div style="margin-bottom: 20px;">
+                    <span style="font-size: 48px; color: #28A745;">✅</span>
+                </div>
+                <h3 style="color: #155724; font-size: 24px; margin-bottom: 15px; font-weight: 600;">
+                    HOÀN TẤT GIẢI NGÂN
+                </h3>
+                <p style="color: #155724; font-size: 16px; margin-bottom: 20px;">
+                    Khoản vay của bạn đã được giải ngân hoàn toàn!
+                </p>
+            </div>
+
+            <div th:unless="${isFullyDisbursed}"
+                style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-radius: 12px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #FFC107;">
+                <div style="margin-bottom: 20px;">
+                    <span style="font-size: 48px; color: #FFC107;">⏳</span>
+                </div>
+                <h3 style="color: #856404; font-size: 24px; margin-bottom: 15px; font-weight: 600;">
+                    GIẢI NGÂN TỪNG PHẦN
+                </h3>
+                <p style="color: #856404; font-size: 16px; margin-bottom: 20px;">
+                    Bạn đã nhận được một phần giải ngân từ khoản vay.
+                </p>
+            </div>
+
+            <!-- Disbursement Details -->
+            <div style="background-color: #f8f9fa; border-radius: 12px; padding: 25px; margin: 30px 0;">
+                <h4 style="color: #2c3e50; font-size: 18px; margin-bottom: 20px; font-weight: 600; text-align: center;">
+                    CHI TIẾT GIẢI NGÂN
+                </h4>
+
+                <div
+                    style="background-color: #ffffff; border-radius: 8px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="color: #6c757d; font-size: 14px; font-weight: 500;">Số tiền giải ngân lần
+                            này:</span>
+                        <span style="color: #28A745; font-size: 18px; font-weight: bold;"
+                            th:text="${#numbers.formatInteger(amount, 0, 'COMMA')} + ' VNĐ'">
+                            100,000,000 VNĐ
+                        </span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="color: #6c757d; font-size: 14px; font-weight: 500;">Tổng đã giải ngân:</span>
+                        <span style="color: #2c3e50; font-size: 16px; font-weight: 600;"
+                            th:text="${#numbers.formatInteger(totalDisbursed, 0, 'COMMA')} + ' VNĐ'">
+                            100,000,000 VNĐ
+                        </span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="color: #6c757d; font-size: 14px; font-weight: 500;">Tổng khoản vay:</span>
+                        <span style="color: #2c3e50; font-size: 16px; font-weight: 600;"
+                            th:text="${#numbers.formatInteger(totalAmount, 0, 'COMMA')} + ' VNĐ'">
+                            200,000,000 VNĐ
+                        </span>
+                    </div>
+                    <div th:unless="${isFullyDisbursed}"
+                        style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #dee2e6;">
+                        <span style="color: #dc3545; font-size: 14px; font-weight: 500;">Còn lại:</span>
+                        <span style="color: #dc3545; font-size: 16px; font-weight: bold;"
+                            th:text="${#numbers.formatInteger(remainingAmount, 0, 'COMMA')} + ' VNĐ'">
+                            100,000,000 VNĐ
+                        </span>
+                    </div>
+                </div>
+
+                <div
+                    style="background-color: #ffffff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <span style="color: #6c757d; font-size: 14px; font-weight: 500;">Thời gian giải ngân:</span>
+                        <span style="color: #2c3e50; font-size: 14px;" th:text="${transactionDate}">
+                            08/06/2025 14:30
+                        </span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #6c757d; font-size: 14px; font-weight: 500;">Mã đơn vay:</span>
+                        <span style="color: #2c3e50; font-size: 14px; font-family: 'Courier New', monospace;"
+                            th:text="'LN' + ${applicationId}">
+                            LN123456
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="margin: 30px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="color: #6c757d; font-size: 14px; font-weight: 500;">Tiến độ giải ngân:</span>
+                    <span style="color: #2c3e50; font-size: 14px; font-weight: 600;"
+                        th:text="${progressPercentage} + '%'">100%</span>
+                </div>
+                <div style="background-color: #e9ecef; border-radius: 10px; height: 20px; overflow: hidden;">
+                    <div style="height: 100%; border-radius: 10px; transition: width 0.3s ease;"
+                        th:style="'background: linear-gradient(90deg, #28A745 0%, #20C997 100%); width: ' + ${progressPercentage} + '%;'">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notes if available -->
+            <div th:if="${notes != null and !#strings.isEmpty(notes)}"
+                style="background-color: #e3f2fd; border: 1px solid #90caf9; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <h4 style="color: #1565c0; font-size: 16px; margin-bottom: 10px; font-weight: 600;">
+                    Ghi chú:
+                </h4>
+                <p style="color: #1565c0; font-size: 14px; margin: 0;" th:text="${notes}">
+                    Ghi chú từ hệ thống
+                </p>
+            </div>
+
+            <!-- Next Steps -->
+            <div th:unless="${isFullyDisbursed}"
+                style="background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <h4 style="color: #856404; font-size: 16px; margin-bottom: 10px; font-weight: 600;">
+                    Bước tiếp theo:
+                </h4>
+                <p style="color: #856404; font-size: 14px; margin: 0;">
+                    Số tiền còn lại sẽ được giải ngân trong những lần tiếp theo. Bạn sẽ nhận được thông báo khi có giải
+                    ngân mới.
+                </p>
+            </div>
+
+            <div th:if="${isFullyDisbursed}"
+                style="background-color: #d4edda; border: 1px solid #c3e6cb; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <h4 style="color: #155724; font-size: 16px; margin-bottom: 10px; font-weight: 600;">
+                    Hoàn tất:
+                </h4>
+                <p style="color: #155724; font-size: 14px; margin: 0;">
+                    Khoản vay của bạn đã được giải ngân đầy đủ. Vui lòng kiểm tra tài khoản ngân hàng và bắt đầu kế
+                    hoạch trả nợ theo lịch trình đã thỏa thuận.
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #2c3e50; color: #ffffff; padding: 30px; text-align: center;">
+            <div style="margin-bottom: 20px; text-align: center;">
+                <div
+                    style="display: inline-block; padding: 8px 16px; background-color: #28A745; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3 style="margin: 0; font-size: 20px; font-weight: bold; color: #ffffff;">
+                        <span style="font-weight: bold;">Loan</span><span style="font-weight: 300;">Conv</span>
+                    </h3>
+                </div>
+            </div>
+            <p style="margin: 5px 0 0 0; font-size: 14px; color: #bdc3c7;">
+                Giải pháp tài chính thông minh
+            </p>
+
+            <div style="border-top: 1px solid #34495e; padding-top: 20px; margin-top: 20px;">
+                <p style="margin: 0; font-size: 12px; color: #bdc3c7;">
+                    © 2025 LoanConv. Tất cả quyền được bảo lưu.
+                </p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; color: #95a5a6;">
+                    Đây là email tự động, vui lòng không phản hồi trực tiếp.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

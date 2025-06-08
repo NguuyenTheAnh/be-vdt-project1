@@ -38,16 +38,9 @@ public class LoanApplication {
 
     @Column(name = "personal_info", nullable = false)
     String personalInfo;
-
     @Enumerated(EnumType.STRING)
-    @Column(name="status", nullable = false, length = 50)
+    @Column(name = "status", nullable = false, length = 50)
     LoanApplicationStatus status;
-
-    @Column(name = "disbursed_amount")
-    Long disbursedAmount;
-
-    @Column(name = "disbursed_date")
-    LocalDateTime disbursedDate;
 
     @Column(name = "internal_notes")
     String internalNotes;

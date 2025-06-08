@@ -17,8 +17,6 @@ public class LoanApplicationResponse {
     Integer requestedTerm;
     String personalInfo;
     String status; // LoanApplicationStatus
-    Long disbursedAmount;
-    LocalDateTime disbursedDate;
     String internalNotes;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

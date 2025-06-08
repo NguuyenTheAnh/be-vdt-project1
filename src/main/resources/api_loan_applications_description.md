@@ -15,12 +15,9 @@ This document provides a detailed description of the APIs available in the `Loan
   {
     "productId": Long, // ID of the loan product being applied for (Required)
     "requestedAmount": Long, // Amount requested by the user (Required, Min: 1)
-    "requestedTerm": Integer, // Loan term in months (Required, Min: 1)
-    "personalInfo": "String", // Personal information of the applicant (Required, Min length: 10)
+    "requestedTerm": Integer, // Loan term in months (Required, Min: 1)    "personalInfo": "String", // Personal information of the applicant (Required, Min length: 10)
     "status": "NEW", // Optional: Initial status of the application (e.g., NEW, PENDING). Defaults to NEW if not provided.
                      // Possible values: NEW, PENDING, REQUIRE_MORE_INFO, APPROVED, REJECTED, DISBURSED
-    "disbursedAmount": "String", // Optional: Amount disbursed
-    "disbursedDate": "String", // Optional: Date of disbursement (ISO 8601 format)
     "internalNotes": "String" // Optional: Internal notes for the application
   }
   ```
@@ -32,11 +29,8 @@ This document provides a detailed description of the APIs available in the `Loan
     "data": {
       "id": Long,
       "requestedAmount": Long,
-      "requestedTerm": Integer,
-      "personalInfo": "String",
+      "requestedTerm": Integer,      "personalInfo": "String",
       "status": "String", // e.g., NEW, PENDING
-      "disbursedAmount": Long,
-      "disbursedDate": "LocalDateTime", // (ISO 8601 format)
       "internalNotes": "String",
       "createdAt": "LocalDateTime", // (ISO 8601 format)
       "updatedAt": "LocalDateTime", // (ISO 8601 format)

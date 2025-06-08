@@ -27,14 +27,8 @@ public class LoanApplicationRequest {
 
     @NotBlank(message = "Personal information is required")
     @Size(min = 10, message = "INVALID_LOAN_APPLICATION_PERSONAL_INFO")
-    String personalInfo;
-
-    // Status is optional and will default to NEW if not provided
+    String personalInfo; // Status is optional and will default to NEW if not provided
     LoanApplicationStatus status;
-
-    String disbursedAmount;
-
-    String disbursedDate;
 
     String internalNotes;
 
