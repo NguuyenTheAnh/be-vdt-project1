@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class UserUpdateRequest {
+public class  UserUpdateUserRequest {
     @Email(message = "INVALID_EMAIL")
     String email;
 

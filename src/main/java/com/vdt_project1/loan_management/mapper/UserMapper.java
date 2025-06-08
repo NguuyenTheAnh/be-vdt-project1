@@ -1,7 +1,7 @@
 package com.vdt_project1.loan_management.mapper;
 
 import com.vdt_project1.loan_management.dto.request.UserCreationRequest;
-import com.vdt_project1.loan_management.dto.request.UserUpdateRequest;
+import com.vdt_project1.loan_management.dto.request.UserUpdateUserRequest;
 import com.vdt_project1.loan_management.dto.response.RoleDto;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
 import com.vdt_project1.loan_management.dto.response.VerificationTokenResponse;
@@ -22,7 +22,7 @@ public interface UserMapper {
     UserResponse toUserResponse(User user);
 
     @Named("toRoleDto")
-    default RoleDto toRoleDto(User user){
+    default RoleDto toRoleDto(User user) {
         if (user == null || user.getRole() == null) {
             return null;
         }
@@ -33,10 +33,11 @@ public interface UserMapper {
                 .build();
     }
 
-    void updateUser(@MappingTarget User user, UserUpdateRequest userUpdateRequest);
+    @Mapping(target = "email", ignore = true)
+    void updateUser(@MappingTarget User user, UserUpdateUserRequest userUpdateUserRequest);
 
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "accountStatus", ignore = true)
-    void updateProfile(@MappingTarget User user, UserUpdateRequest userUpdateRequest);
+    void updateProfile(@MappingTarget User user, UserUpdateUserRequest userUpdateUserRequest);
 }

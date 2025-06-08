@@ -1,7 +1,8 @@
 package com.vdt_project1.loan_management.service;
 
 import com.vdt_project1.loan_management.dto.request.UserCreationRequest;
-import com.vdt_project1.loan_management.dto.request.UserUpdateRequest;
+import com.vdt_project1.loan_management.dto.request.UserUpdateUserRequest;
+import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
 import com.vdt_project1.loan_management.entity.LoanProduct;
@@ -24,6 +25,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,7 +74,8 @@ public class UserService {
     public Page<UserResponse> getUsers(String name, String status, Pageable pageable) {
         Page<User> userPage;
         if (name != null && status != null) {
-            userPage = userRepository.findByFullNameContainingIgnoreCaseAndAccountStatus(name, AccountStatus.valueOf(status.toUpperCase()), pageable);
+            userPage = userRepository.findByFullNameContainingIgnoreCaseAndAccountStatus(name,
+                    AccountStatus.valueOf(status.toUpperCase()), pageable);
         } else if (name != null) {
             userPage = userRepository.findByFullNameContainingIgnoreCase(name, pageable);
         } else if (status != null) {
@@ -92,7 +97,7 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponse updateMyProfile(UserUpdateRequest request) {
+    public UserResponse updateMyProfile(UserUpdateUserRequest request) {
         User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
 
@@ -111,16 +116,41 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    public void changeUserStatus(Long id, String status) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+        try {
+            user.setAccountStatus(AccountStatus.valueOf(status.toUpperCase()));
+            user.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(user);
+        } catch (IllegalArgumentException e) {
+            log.error("Invalid status value: {}", status);
+            throw new AppException(ErrorCode.INVALID_STATUS);
+        }
+    }
+
     public UserResponse getUserById(Long id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found with id: " + id)));
     }
 
-    public UserResponse updateUser(Long id, UserUpdateRequest request) {
+    public UserResponse updateUser(Long id, UserUpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        String originalPasswordHash = user.getPassword(); // Store current password hash
+
+        userMapper.updateUser(user, request); // Apply other updates from request
+
+        // Handle password update
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            // New password provided, encode and set it
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        } else {
+            // No new password provided, ensure original password hash is retained
+            user.setPassword(originalPasswordHash);
+        }
+
         user.setUpdatedAt(LocalDateTime.now());
 
         if (request.getRoleName() != null && !request.getRoleName().isEmpty()) {

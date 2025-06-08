@@ -12,6 +12,7 @@ public enum ErrorCode {
     USER_EXISTS(1001, "User already exists", HttpStatusCode.valueOf(400)),
     INVALID_EMAIL(1002, "Email must be in a valid format", HttpStatusCode.valueOf(400)),
     INVALID_PASSWORD(1003, "Password must be at least 6 characters long", HttpStatusCode.valueOf(400)),
+    INVALID_STATUS (1003, "Status must be either 'ACTIVE' or 'INACTIVE'", HttpStatusCode.valueOf(400)),
     USER_NOT_EXIST(1004, "User does not exist", HttpStatusCode.valueOf(404)),
     UNAUTHENTICATED(1005, "User is not authenticated", HttpStatusCode.valueOf(401)),
     UNAUTHORIZED(1006, "Unauthorized access", HttpStatusCode.valueOf(403)),

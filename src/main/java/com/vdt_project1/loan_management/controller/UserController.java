@@ -1,7 +1,7 @@
 package com.vdt_project1.loan_management.controller;
 
 import com.vdt_project1.loan_management.dto.request.UserCreationRequest;
-import com.vdt_project1.loan_management.dto.request.UserUpdateRequest;
+import com.vdt_project1.loan_management.dto.request.UserUpdateUserRequest;
 import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
@@ -39,8 +39,7 @@ public class UserController {
     ApiResponse<Page<UserResponse>> getUsers(
             Pageable pageable,
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String status
-    ) {
+            @RequestParam(required = false) String status) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("User {} is accessing the getUsers endpoint", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
@@ -59,7 +58,7 @@ public class UserController {
 
     @PatchMapping
     @PreAuthorize("hasAuthority('PATCH_USERS_UPDATE_CURRENT_USER_PROFILE') or hasRole('ADMIN')")
-    ApiResponse<UserResponse> updateUserProfile(@RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUserProfile(@RequestBody UserUpdateUserRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.updateMyProfile(request))
                 .build();
@@ -67,9 +66,18 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAuthority('PATCH_USERS_UPDATE_BY_ID') or hasRole('ADMIN')")
-    ApiResponse<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUser(@PathVariable("id") Long id, @RequestBody UserUpdateUserRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.updateUser(id, request))
+                .build();
+    }
+
+    @PatchMapping("/{id}/status")
+    @PreAuthorize("hasAuthority('PATCH_USERS_UPDATE_STATUS_BY_ID') or hasRole('ADMIN')")
+    ApiResponse<Void> changeUserStatus(@PathVariable("id") Long id, @RequestParam String status) {
+        userService.changeUserStatus(id, status);
+        return ApiResponse.<Void>builder()
+                .data(null)
                 .build();
     }
 
