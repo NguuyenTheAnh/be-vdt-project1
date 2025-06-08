@@ -54,7 +54,7 @@ public class LoanApplicationController {
         }
 
         @GetMapping("/required-documents/{id}")
-        @PreAuthorize("hasAuthority('GET_LOAN_APPLICATIONS_REQUIRED_DOCUMENTS_BY_LOAN_PRODUCT_ID') or hasRole('ADMIN')")
+        @PreAuthorize("hasAuthority('GET_REQUIRED_DOCUMENTS_BY_LOAN_PRODUCT_ID') or hasRole('ADMIN')")
         public ApiResponse<Map<String, Object>> getRequiredDocuments(@PathVariable Long id) {
                 log.info("Fetching required documents for loan product with ID: {}", id);
                 Map<String, Object> response = loanApplicationService.getRequiredDocument(id);
@@ -89,6 +89,18 @@ public class LoanApplicationController {
                         @Valid @RequestBody LoanApplicationRequest request) {
                 log.info("Updating loan application with ID: {}", id);
                 LoanApplicationResponse response = loanApplicationService.updateLoanApplication(id, request);
+                return ApiResponse.<LoanApplicationResponse>builder()
+                                .data(response)
+                                .build();
+        }
+
+        // api for user to update their loan application status
+        @PatchMapping("/{id}/status")
+        @PreAuthorize("hasAuthority('PATCH_LOAN_APPLICATIONS_UPDATE_STATUS_BY_ID') or hasRole('ADMIN')")
+        public ApiResponse<LoanApplicationResponse> updateLoanApplicationStatus(@PathVariable Long id,
+                        @RequestParam LoanApplicationStatus status) {
+                log.info("Updating loan application status for ID: {} to {}", id, status);
+                LoanApplicationResponse response = loanApplicationService.updateLoanApplicationStatus(id, status);
                 return ApiResponse.<LoanApplicationResponse>builder()
                                 .data(response)
                                 .build();

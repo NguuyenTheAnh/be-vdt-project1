@@ -47,6 +47,8 @@ public enum ErrorCode {
             HttpStatusCode.valueOf(400)),
     INVALID_LOAN_APPLICATION_PERSONAL_INFO(3004, "Personal information must be at least {min} characters long",
             HttpStatusCode.valueOf(400)),
+    LOAN_APPLICATION_ALREADY_REJECTED (3005, "Loan application has already been rejected",
+            HttpStatusCode.valueOf(400)),
     NOTIFICATION_NOT_FOUND(4001, "Notification not found", HttpStatusCode.valueOf(404)),
     DOCUMENT_NOT_FOUND(5001, "Document not found", HttpStatusCode.valueOf(404)),
     VERIFICATION_TOKEN_NOT_FOUND(6001, "Verification token not found", HttpStatusCode.valueOf(404)),

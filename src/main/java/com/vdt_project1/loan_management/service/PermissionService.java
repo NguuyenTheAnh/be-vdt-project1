@@ -27,9 +27,11 @@ public class PermissionService {
         return permissionMapper.toPermissionResponse(permissionRepository.save(permission));
     }
 
-    public Page<PermissionResponse> getAllPermissions(Pageable pageable) {
-        Page<Permission> permissions = permissionRepository.findAll(pageable);
-        return permissions.map(permissionMapper::toPermissionResponse);
+    public List<PermissionResponse> getAllPermissions() {
+        List<Permission> permissions = permissionRepository.findAll();
+        return permissions.stream()
+                .map(permissionMapper::toPermissionResponse)
+                .toList();
     }
 
     public void deletePermission(String permissionName) {

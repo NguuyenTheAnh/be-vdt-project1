@@ -2,9 +2,12 @@ package com.vdt_project1.loan_management.service;
 
 import com.vdt_project1.loan_management.dto.request.UserCreationRequest;
 import com.vdt_project1.loan_management.dto.request.UserUpdateRequest;
+import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
+import com.vdt_project1.loan_management.entity.LoanProduct;
 import com.vdt_project1.loan_management.entity.User;
 import com.vdt_project1.loan_management.enums.AccountStatus;
+import com.vdt_project1.loan_management.enums.LoanProductStatus;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.mapper.UserMapper;
@@ -64,14 +67,18 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
-    public Page<UserResponse> getUsers(Pageable pageable) {
-        Page<User> users = userRepository.findAll(pageable);
-        if (users.isEmpty()) {
-            log.warn("No users found");
-            return Page.empty();
+    public Page<UserResponse> getUsers(String name, String status, Pageable pageable) {
+        Page<User> userPage;
+        if (name != null && status != null) {
+            userPage = userRepository.findByFullNameContainingIgnoreCaseAndAccountStatus(name, AccountStatus.valueOf(status.toUpperCase()), pageable);
+        } else if (name != null) {
+            userPage = userRepository.findByFullNameContainingIgnoreCase(name, pageable);
+        } else if (status != null) {
+            userPage = userRepository.findByAccountStatus(AccountStatus.valueOf(status.toUpperCase()), pageable);
+        } else {
+            userPage = userRepository.findAll(pageable);
         }
-        log.info("Found {} users", users.getTotalElements());
-        return users.map(userMapper::toUserResponse);
+        return userPage.map(userMapper::toUserResponse);
     }
 
     public UserResponse getMyProfile() {

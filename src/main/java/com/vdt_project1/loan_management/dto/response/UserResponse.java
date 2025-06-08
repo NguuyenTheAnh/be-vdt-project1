@@ -24,5 +24,5 @@ public class UserResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    RoleResponse role;
+    RoleDto role;
 }

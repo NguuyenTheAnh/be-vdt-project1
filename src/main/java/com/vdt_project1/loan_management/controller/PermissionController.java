@@ -32,9 +32,9 @@ public class PermissionController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('GET_PERMISSIONS_ALL') or hasRole('ADMIN')")
-    ApiResponse<Page<PermissionResponse>> getPermissions(Pageable pageable) {
-        return ApiResponse.<Page<PermissionResponse>>builder()
-                .data(permissionService.getAllPermissions(pageable))
+    ApiResponse<List<PermissionResponse>> getPermissions() {
+        return ApiResponse.<List<PermissionResponse>>builder()
+                .data(permissionService.getAllPermissions())
                 .build();
     }
 

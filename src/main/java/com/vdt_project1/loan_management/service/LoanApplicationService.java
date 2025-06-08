@@ -148,6 +148,26 @@ public class LoanApplicationService {
         return loanApplicationMapper.toResponse(updatedApplication);
     }
 
+    // service for user to update their loan application status
+    @Transactional
+    public LoanApplicationResponse updateLoanApplicationStatus (Long id, LoanApplicationStatus status) {
+        log.info("Updating loan application status for ID: {} to {}", id, status);
+        LoanApplication loanApplication = findLoanApplicationById(id);
+
+        // Validate status change
+        if (loanApplication.getStatus() == LoanApplicationStatus.REJECTED) {
+            throw new AppException(ErrorCode.LOAN_APPLICATION_ALREADY_REJECTED);
+        }
+
+        // Update status and timestamps
+        loanApplication.setStatus(status);
+        loanApplication.setUpdatedAt(LocalDateTime.now());
+
+        LoanApplication updatedApplication = loanApplicationRepository.save(loanApplication);
+        log.info("Loan application status updated successfully with ID: {}", updatedApplication.getId());
+        return loanApplicationMapper.toResponse(updatedApplication);
+    }
+
     @Transactional
     public void deleteLoanApplicationById(Long id) {
         log.info("Deleting loan application with ID: {}", id);

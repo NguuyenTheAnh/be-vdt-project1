@@ -2,6 +2,7 @@ package com.vdt_project1.loan_management.service;
 
 import com.vdt_project1.loan_management.dto.request.RoleRequest;
 import com.vdt_project1.loan_management.dto.response.RoleResponse;
+import com.vdt_project1.loan_management.entity.Permission;
 import com.vdt_project1.loan_management.entity.Role;
 import com.vdt_project1.loan_management.mapper.RoleMapper;
 import com.vdt_project1.loan_management.repository.PermissionRepository;
@@ -37,9 +38,20 @@ public class RoleService {
         return roleMapper.toRoleResponse(roleRepository.save(role));
     }
 
-    public Page<RoleResponse> getAllRoles(Pageable pageable) {
-        Page<Role> rolesPage = roleRepository.findAll(pageable);
-        return rolesPage.map(roleMapper::toRoleResponse);
+    public List<RoleResponse> getAllRoles() {
+        List<Role> roles = roleRepository.findAll();
+        return roles.stream()
+                .map(roleMapper::toRoleResponse)
+                .toList();
+    }
+
+    // get all permissions for a role
+    public List<String> getPermissionsByRoleName(String roleName) {
+        Role role = roleRepository.findById(roleName)
+                .orElseThrow(() -> new RuntimeException("Role not found"));
+        return role.getPermissions().stream()
+                .map(Permission::getName)
+                .toList();
     }
 
     public RoleResponse updateRole(String roleName, RoleRequest roleRequest) {

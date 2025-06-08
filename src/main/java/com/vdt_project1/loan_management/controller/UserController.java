@@ -3,6 +3,7 @@ package com.vdt_project1.loan_management.controller;
 import com.vdt_project1.loan_management.dto.request.UserCreationRequest;
 import com.vdt_project1.loan_management.dto.request.UserUpdateRequest;
 import com.vdt_project1.loan_management.dto.response.ApiResponse;
+import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
 import com.vdt_project1.loan_management.service.UserService;
 import jakarta.validation.Valid;
@@ -35,12 +36,16 @@ public class UserController {
 
     @GetMapping()
     @PreAuthorize("hasAuthority('GET_USERS_ALL') or hasRole('ADMIN')")
-    ApiResponse<Page<UserResponse>> getUsers(Pageable pageable) {
+    ApiResponse<Page<UserResponse>> getUsers(
+            Pageable pageable,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String status
+    ) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         log.info("User {} is accessing the getUsers endpoint", authentication.getName());
         authentication.getAuthorities().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()));
         return ApiResponse.<Page<UserResponse>>builder()
-                .data(userService.getUsers(pageable))
+                .data(userService.getUsers(name, status, pageable))
                 .build();
     }
 

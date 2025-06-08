@@ -32,9 +32,17 @@ public class RoleController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('GET_ROLES_ALL') or hasRole('ADMIN')")
-    ApiResponse<Page<RoleResponse>> getAllRoles(Pageable pageable) {
-        return ApiResponse.<Page<RoleResponse>>builder()
-                .data(roleService.getAllRoles(pageable))
+    ApiResponse< List<RoleResponse> > getAllRoles() {
+        return ApiResponse.< List<RoleResponse> >builder()
+                .data(roleService.getAllRoles())
+                .build();
+    }
+
+    @GetMapping("/permissions/{roleName}")
+    @PreAuthorize("hasAuthority('GET_PERMISSIONS_BY_ROLE') or hasRole('ADMIN')")
+    ApiResponse<List<String>> getPermissionsByRole(@PathVariable String roleName) {
+        return ApiResponse.<List<String>>builder()
+                .data(roleService.getPermissionsByRoleName(roleName))
                 .build();
     }
 
