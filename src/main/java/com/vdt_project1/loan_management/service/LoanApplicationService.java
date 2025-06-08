@@ -1,8 +1,7 @@
 package com.vdt_project1.loan_management.service;
 
 import com.vdt_project1.loan_management.dto.request.LoanApplicationRequest;
-import com.vdt_project1.loan_management.dto.response.LoanApplicationResponse;
-import com.vdt_project1.loan_management.dto.response.UserResponse;
+import com.vdt_project1.loan_management.dto.response.*;
 import com.vdt_project1.loan_management.entity.Document;
 import com.vdt_project1.loan_management.entity.LoanApplication;
 import com.vdt_project1.loan_management.entity.LoanProduct;
@@ -245,16 +244,116 @@ public class LoanApplicationService {
         log.info("Loan application deleted successfully");
     }
 
+    // Statistics service methods for reporting
+    @Transactional(readOnly = true)
+    public List<StatusStatisticsResponse> getApplicationStatisticsByStatus() {
+        log.info("Fetching application statistics by status");
+        List<Object[]> results = loanApplicationRepository.getApplicationCountByStatus();
+
+        return results.stream()
+                .map(result -> {
+                    LoanApplicationStatus status = (LoanApplicationStatus) result[0];
+                    Long count = (Long) result[1];
+
+                    return StatusStatisticsResponse.builder()
+                            .status(status.name())
+                            .statusText(getStatusText(status))
+                            .count(count)
+                            .color(getStatusColor(status))
+                            .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductStatisticsResponse> getApplicationStatisticsByProduct() {
+        log.info("Fetching application statistics by product");
+        List<Object[]> results = loanApplicationRepository.getApplicationCountByProduct();
+
+        return results.stream()
+                .map(result -> {
+                    String productName = (String) result[0];
+                    Long count = (Long) result[1];
+
+                    return ProductStatisticsResponse.builder()
+                            .productName(productName)
+                            .count(count)
+                            .color(getRandomColor())
+                            .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ApprovalRatioResponse getApprovalRatio() {
+        log.info("Fetching approval ratio statistics");
+
+        Long approvedCount = loanApplicationRepository.countByStatus(LoanApplicationStatus.APPROVED) +
+                loanApplicationRepository.countByStatus(LoanApplicationStatus.PARTIALLY_DISBURSED) +
+                loanApplicationRepository.countByStatus(LoanApplicationStatus.FULLY_DISBURSED);
+        Long rejectedCount = loanApplicationRepository.countByStatus(LoanApplicationStatus.REJECTED);
+        Long totalCount = approvedCount + rejectedCount;
+
+        Double approvalRate = totalCount > 0 ? (approvedCount * 100.0) / totalCount : 0.0;
+        Double rejectionRate = totalCount > 0 ? (rejectedCount * 100.0) / totalCount : 0.0;
+
+        return ApprovalRatioResponse.builder()
+                .approvedCount(approvedCount)
+                .rejectedCount(rejectedCount)
+                .totalCount(totalCount)
+                .approvalRate(Math.round(approvalRate * 100.0) / 100.0)
+                .rejectionRate(Math.round(rejectionRate * 100.0) / 100.0)
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ApprovedAmountByTimeResponse> getApprovedAmountByTime(LocalDateTime startDate, LocalDateTime endDate) {
+        log.info("Fetching approved amount statistics from {} to {}", startDate, endDate);
+        List<Object[]> results = loanApplicationRepository.getApprovedAmountByDateRange(startDate, endDate);
+
+        return results.stream()
+                .map(result -> {
+                    java.sql.Date sqlDate = (java.sql.Date) result[0];
+                    Long totalAmount = (Long) result[1];
+                    Long count = (Long) result[2];
+
+                    return ApprovedAmountByTimeResponse.builder()
+                            .date(sqlDate.toLocalDate())
+                            .totalApprovedAmount(totalAmount)
+                            .applicationCount(count.intValue())
+                            .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    // Helper methods for statistics and notifications
     private String getStatusText(LoanApplicationStatus status) {
         return switch (status) {
-            case NEW -> "Mới";
-            case PENDING -> "Đang chờ xử lý";
-            case APPROVED -> "Đã phê duyệt";
-            case REJECTED -> "Đã từ chối";
+            case NEW -> "Hồ sơ mới";
+            case PENDING -> "Đang xử lý";
             case REQUIRE_MORE_INFO -> "Yêu cầu bổ sung thông tin";
+            case APPROVED -> "Đã duyệt";
+            case REJECTED -> "Từ chối";
             case PARTIALLY_DISBURSED -> "Giải ngân một phần";
-            case FULLY_DISBURSED -> "Đã giải ngân hoàn tất";
-            default -> status.name();
+            case FULLY_DISBURSED -> "Đã giải ngân đầy đủ";
         };
+    }
+
+    private String getStatusColor(LoanApplicationStatus status) {
+        return switch (status) {
+            case NEW -> "#6c757d";
+            case PENDING -> "#ffc107";
+            case APPROVED -> "#28a745";
+            case REJECTED -> "#dc3545";
+            case REQUIRE_MORE_INFO -> "#fd7e14";
+            case PARTIALLY_DISBURSED -> "#17a2b8";
+            case FULLY_DISBURSED -> "#20c997";
+            default -> "#6c757d";
+        };
+    }
+
+    private String getRandomColor() {
+        String[] colors = { "#007bff", "#28a745", "#ffc107", "#dc3545", "#6f42c1", "#fd7e14", "#20c997", "#6c757d" };
+        return colors[(int) (Math.random() * colors.length)];
     }
 }
