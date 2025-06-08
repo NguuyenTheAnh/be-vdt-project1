@@ -69,4 +69,29 @@ public class EmailService {
 
         mailSender.send(message);
     }
+
+    public void sendApplicationResultEmail(String to, String name, String subject,
+            String status, String statusText, Long applicationId, Long amount,
+            String productName, String internalNotes) throws MessagingException {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+        // Tạo nội dung HTML từ template
+        Context context = new Context();
+        context.setVariable("name", name);
+        context.setVariable("status", status);
+        context.setVariable("statusText", statusText);
+        context.setVariable("applicationId", applicationId);
+        context.setVariable("amount", amount);
+        context.setVariable("productName", productName);
+        context.setVariable("internalNotes", internalNotes);
+
+        String htmlContent = templateEngine.process("application-result-template", context);
+
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // true = HTML
+
+        mailSender.send(message);
+    }
 }

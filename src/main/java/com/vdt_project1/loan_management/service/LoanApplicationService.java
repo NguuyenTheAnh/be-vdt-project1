@@ -1,20 +1,17 @@
 package com.vdt_project1.loan_management.service;
 
 import com.vdt_project1.loan_management.dto.request.LoanApplicationRequest;
-import com.vdt_project1.loan_management.dto.request.LoanProductRequest;
 import com.vdt_project1.loan_management.dto.response.LoanApplicationResponse;
-import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
 import com.vdt_project1.loan_management.entity.Document;
 import com.vdt_project1.loan_management.entity.LoanApplication;
 import com.vdt_project1.loan_management.entity.LoanProduct;
 import com.vdt_project1.loan_management.entity.User;
 import com.vdt_project1.loan_management.enums.LoanApplicationStatus;
-import com.vdt_project1.loan_management.enums.LoanProductStatus;
+import com.vdt_project1.loan_management.enums.NotificationType;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.mapper.LoanApplicationMapper;
-import com.vdt_project1.loan_management.mapper.LoanProductMapper;
 import com.vdt_project1.loan_management.repository.DocumentRepository;
 import com.vdt_project1.loan_management.repository.LoanApplicationRepository;
 import com.vdt_project1.loan_management.repository.LoanProductRepository;
@@ -22,7 +19,6 @@ import com.vdt_project1.loan_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.mapping.Any;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,25 +34,30 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class LoanApplicationService {
-   LoanApplicationMapper loanApplicationMapper;
-   LoanApplicationRepository loanApplicationRepository;
+    LoanApplicationMapper loanApplicationMapper;
+    LoanApplicationRepository loanApplicationRepository;
     LoanProductRepository loanProductRepository;
     DocumentRepository documentRepository;
     UserRepository userRepository;
     UserService userService;
+    EmailService emailService;
+    NotificationService notificationService;
 
     private LoanProduct findLoanProductById(Long id) {
         return loanProductRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_PRODUCT_NOT_FOUND));
     }
+
     private LoanApplication findLoanApplicationById(Long id) {
         return loanApplicationRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_APPLICATION_NOT_FOUND));
     }
+
     private User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXIST));
     }
+
     public static Map<String, Object> buildEmptyDocumentMap(String requiredDocuments) {
         Map<String, Object> map = new HashMap<>();
         if (requiredDocuments != null && !requiredDocuments.isBlank()) {
@@ -72,7 +73,8 @@ public class LoanApplicationService {
     public Map<String, Object> getRequiredDocument(Long applicationId) {
         log.info("Fetching required documents for loan application ID: {}", applicationId);
         LoanApplication loanApplication = findLoanApplicationById(applicationId);
-        Map<String, Object> requiredDocs = buildEmptyDocumentMap(loanApplication.getLoanProduct().getRequiredDocuments());
+        Map<String, Object> requiredDocs = buildEmptyDocumentMap(
+                loanApplication.getLoanProduct().getRequiredDocuments());
         List<Document> documents = documentRepository.findByLoanApplicationId(applicationId, null).getContent();
         for (Document document : documents) {
             String type = document.getDocumentType();
@@ -87,7 +89,7 @@ public class LoanApplicationService {
     @Transactional
     public LoanApplicationResponse createLoanApplication(LoanApplicationRequest request) {
         UserResponse userResponse = userService.getMyProfile();
-       log.info("Creating new loan application for user ID: {}", userResponse.getId());
+        log.info("Creating new loan application for user ID: {}", userResponse.getId());
 
         LoanApplication loanApplication = loanApplicationMapper.toEntity(request);
         // Validate user exists
@@ -150,7 +152,7 @@ public class LoanApplicationService {
 
     // service for user to update their loan application status
     @Transactional
-    public LoanApplicationResponse updateLoanApplicationStatus (Long id, LoanApplicationStatus status) {
+    public LoanApplicationResponse updateLoanApplicationStatus(Long id, LoanApplicationStatus status) {
         log.info("Updating loan application status for ID: {} to {}", id, status);
         LoanApplication loanApplication = findLoanApplicationById(id);
 
@@ -168,6 +170,73 @@ public class LoanApplicationService {
         return loanApplicationMapper.toResponse(updatedApplication);
     }
 
+    // Admin method to update loan application status with internal notes and
+    // notifications
+    @Transactional
+    public LoanApplicationResponse updateLoanApplicationStatusForManage(Long id, LoanApplicationStatus status,
+            String internalNotes) {
+        log.info("Admin updating loan application status for ID: {} to {} with internal notes", id, status);
+        LoanApplication loanApplication = findLoanApplicationById(id);
+
+        // Validate status change
+        if (loanApplication.getStatus() == LoanApplicationStatus.REJECTED && status != LoanApplicationStatus.REJECTED) {
+            throw new AppException(ErrorCode.LOAN_APPLICATION_ALREADY_REJECTED);
+        }
+
+        // Update status and timestamps
+        loanApplication.setStatus(status);
+        loanApplication.setUpdatedAt(LocalDateTime.now());
+
+        LoanApplication updatedApplication = loanApplicationRepository.save(loanApplication);
+        log.info("Loan application status updated successfully with ID: {}", updatedApplication.getId());
+
+        // Send notification to the applicant
+        try {
+            String notificationMessage = String.format("Trạng thái đơn vay #%d của bạn đã được cập nhật thành: %s",
+                    id, getStatusText(status));
+
+            if (internalNotes != null && !internalNotes.trim().isEmpty()) {
+                notificationMessage += ". Ghi chú: " + internalNotes;
+            }
+
+            // Determine notification type based on status
+            NotificationType notificationType = switch (status) {
+                case APPROVED -> NotificationType.LOAN_APPROVAL;
+                case REJECTED -> NotificationType.LOAN_REJECTION;
+                default -> NotificationType.SYSTEM;
+            };
+
+            notificationService.createNotificationForUser(
+                    loanApplication.getUser().getId(),
+                    id,
+                    notificationMessage,
+                    notificationType);
+            log.info("Notification sent to user ID: {}", loanApplication.getUser().getId());
+        } catch (Exception e) {
+            log.error("Failed to send notification for loan application ID: {}", id, e);
+        }
+
+        // Send email notification
+        try {
+            String emailSubject = String.format("Cập nhật trạng thái đơn vay #%d - %s", id, getStatusText(status));
+            emailService.sendApplicationResultEmail(
+                    loanApplication.getUser().getEmail(),
+                    loanApplication.getUser().getFullName(),
+                    emailSubject,
+                    status.name(),
+                    getStatusText(status),
+                    id,
+                    loanApplication.getRequestedAmount(),
+                    loanApplication.getLoanProduct().getName(),
+                    internalNotes);
+            log.info("Email notification sent to: {}", loanApplication.getUser().getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send email notification for loan application ID: {}", id, e);
+        }
+
+        return loanApplicationMapper.toResponse(updatedApplication);
+    }
+
     @Transactional
     public void deleteLoanApplicationById(Long id) {
         log.info("Deleting loan application with ID: {}", id);
@@ -176,4 +245,16 @@ public class LoanApplicationService {
         log.info("Loan application deleted successfully");
     }
 
+    private String getStatusText(LoanApplicationStatus status) {
+        return switch (status) {
+            case NEW -> "Mới";
+            case PENDING -> "Đang chờ xử lý";
+            case APPROVED -> "Đã phê duyệt";
+            case REJECTED -> "Đã từ chối";
+            case REQUIRE_MORE_INFO -> "Yêu cầu bổ sung thông tin";
+            case PARTIALLY_DISBURSED -> "Giải ngân một phần";
+            case FULLY_DISBURSED -> "Đã giải ngân hoàn tất";
+            default -> status.name();
+        };
+    }
 }

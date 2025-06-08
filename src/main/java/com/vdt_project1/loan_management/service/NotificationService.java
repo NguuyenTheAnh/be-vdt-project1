@@ -1,13 +1,12 @@
 package com.vdt_project1.loan_management.service;
 
-import com.vdt_project1.loan_management.dto.request.LoanApplicationRequest;
 import com.vdt_project1.loan_management.dto.request.NotificationRequest;
-import com.vdt_project1.loan_management.dto.response.LoanApplicationResponse;
 import com.vdt_project1.loan_management.dto.response.NotificationResponse;
 import com.vdt_project1.loan_management.dto.response.UserResponse;
 import com.vdt_project1.loan_management.entity.LoanApplication;
 import com.vdt_project1.loan_management.entity.Notification;
 import com.vdt_project1.loan_management.entity.User;
+import com.vdt_project1.loan_management.enums.NotificationType;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.mapper.NotificationMapper;
@@ -36,7 +35,7 @@ public class NotificationService {
     UserRepository userRepository;
     UserService userService;
 
-    private  LoanApplication findLoanApplicationById(Long id) {
+    private LoanApplication findLoanApplicationById(Long id) {
         return loanApplicationRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.LOAN_APPLICATION_NOT_FOUND));
     }
@@ -47,16 +46,16 @@ public class NotificationService {
     }
 
     @Transactional
-    public NotificationResponse createNotification(NotificationRequest request){
+    public NotificationResponse createNotification(NotificationRequest request) {
         UserResponse userResponse = userService.getMyProfile();
 
         Notification notification = notificationMapper.toEntity(request);
 
-        if(request.getIsRead() == null) {
+        if (request.getIsRead() == null) {
             notification.setIsRead(false);
         }
         // set user and loan application
-        notification.setLoanApplication( findLoanApplicationById(request.getApplicationId()));
+        notification.setLoanApplication(findLoanApplicationById(request.getApplicationId()));
         notification.setUser(findUserById(userResponse.getId()));
         notification.setCreatedAt(LocalDateTime.now());
 
@@ -90,7 +89,8 @@ public class NotificationService {
         UserResponse userResponse = userService.getMyProfile();
         log.info("Marking all notifications as read for user ID: {}", userResponse.getId());
 
-        Page<Notification> notifications = notificationRepository.findByUserId(userResponse.getId(), Pageable.unpaged());
+        Page<Notification> notifications = notificationRepository.findByUserId(userResponse.getId(),
+                Pageable.unpaged());
         if (notifications.hasContent()) {
             notifications.forEach(notification -> {
                 notification.setIsRead(true);
@@ -134,5 +134,25 @@ public class NotificationService {
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
         notificationRepository.delete(notification);
         log.info("Notification deleted successfully");
+    }
+
+    @Transactional
+    public NotificationResponse createNotificationForUser(Long userId, Long applicationId, String message,
+            NotificationType notificationType) {
+        log.info("Creating notification for user ID: {} with application ID: {}", userId, applicationId);
+
+        Notification notification = Notification.builder()
+                .message(message)
+                .notificationType(notificationType)
+                .isRead(false)
+                .loanApplication(findLoanApplicationById(applicationId))
+                .user(findUserById(userId))
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        Notification savedNotification = notificationRepository.save(notification);
+        log.info("Notification created successfully with ID: {}", savedNotification.getId());
+
+        return notificationMapper.toResponse(savedNotification);
     }
 }

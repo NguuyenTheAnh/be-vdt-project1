@@ -29,7 +29,6 @@ public class SecurityConfig {
     @Autowired
     private CustomJwtDecoder customJwtDecoder;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(Customizer.withDefaults());
@@ -41,8 +40,9 @@ public class SecurityConfig {
                         "/auth/refresh",
                         "/auth/password-reset/**",
                         "/auth/account-activation/**",
-                        "/email/send"
-                ).permitAll()
+                        "/email/send")
+                .permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/verification-tokens/**").permitAll()
                 .anyRequest().authenticated());
         http.oauth2ResourceServer(oauth2 -> oauth2

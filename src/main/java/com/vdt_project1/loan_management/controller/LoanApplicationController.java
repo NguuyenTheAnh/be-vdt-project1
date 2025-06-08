@@ -1,17 +1,10 @@
 package com.vdt_project1.loan_management.controller;
 
 import com.vdt_project1.loan_management.dto.request.LoanApplicationRequest;
-import com.vdt_project1.loan_management.dto.request.LoanProductRequest;
 import com.vdt_project1.loan_management.dto.response.ApiResponse;
 import com.vdt_project1.loan_management.dto.response.LoanApplicationResponse;
-import com.vdt_project1.loan_management.dto.response.LoanProductResponse;
-import com.vdt_project1.loan_management.entity.LoanApplication;
-import com.vdt_project1.loan_management.entity.LoanProduct;
-import com.vdt_project1.loan_management.entity.User;
 import com.vdt_project1.loan_management.enums.LoanApplicationStatus;
-import com.vdt_project1.loan_management.enums.LoanProductStatus;
 import com.vdt_project1.loan_management.service.LoanApplicationService;
-import com.vdt_project1.loan_management.service.LoanProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,10 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
@@ -101,6 +92,22 @@ public class LoanApplicationController {
                         @RequestParam LoanApplicationStatus status) {
                 log.info("Updating loan application status for ID: {} to {}", id, status);
                 LoanApplicationResponse response = loanApplicationService.updateLoanApplicationStatus(id, status);
+                return ApiResponse.<LoanApplicationResponse>builder()
+                                .data(response)
+                                .build();
+        }
+
+        // Admin API to update loan application status with internal notes and
+        // notifications
+        @PatchMapping("/{id}/status/manage")
+        @PreAuthorize("hasAuthority('PATCH_LOAN_APPLICATIONS_STATUS_FOR_MANAGE') or hasRole('ADMIN')")
+        public ApiResponse<LoanApplicationResponse> updateLoanApplicationStatusForManage(
+                        @PathVariable Long id,
+                        @RequestParam LoanApplicationStatus status,
+                        @RequestParam(required = false) String internal_notes) {
+                log.info("Admin updating loan application status for ID: {} to {} with internal notes", id, status);
+                LoanApplicationResponse response = loanApplicationService.updateLoanApplicationStatusForManage(id,
+                                status, internal_notes);
                 return ApiResponse.<LoanApplicationResponse>builder()
                                 .data(response)
                                 .build();
