@@ -3,18 +3,18 @@
 ## Pre-Migration Checklist (Night Before)
 
 ### Quick Infrastructure Prerequisites
-- [ ] Install Docker Desktop (if not already installed)
-- [ ] Verify Java 21 and Maven are working
-- [ ] Download PostgreSQL or prepare H2 setup
-- [ ] Create backup of current database
-- [ ] Prepare 3 empty Git repositories for services
-- [ ] Team coordination and role assignment
+- [v] Install Docker Desktop (if not already installed)
+- [v] Verify Java 21 and Maven are working
+- [v] Download PostgreSQL or prepare H2 setup
+- [v] Create backup of current database
+- [v] Prepare 3 empty Git repositories for services
+- [v] Team coordination and role assignment
 
 ### Code Preparation
-- [ ] Create backup of current monolith
-- [ ] Identify core components to extract (Auth, Loan, Support)
-- [ ] Prepare basic Spring Boot templates
-- [ ] Set up IDE workspaces for 3 new projects
+- [v] Create backup of current monolith
+- [v] Identify core components to extract (Auth, Loan, Support)
+- [v] Prepare basic Spring Boot templates
+- [v] Set up IDE workspaces for 3 new projects
 
 ## Hour-by-Hour Migration Plan
 
