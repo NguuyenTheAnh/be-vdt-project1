@@ -56,12 +56,13 @@ public enum ErrorCode {
         LOAN_APPLICATION_NOT_APPROVED(7002, "Loan application must be approved before disbursement",
                         HttpStatusCode.valueOf(400)),
         DISBURSEMENT_AMOUNT_EXCEEDS_APPROVED(7003, "Total disbursement amount cannot exceed approved loan amount",
-                        HttpStatusCode.valueOf(400)),
-        VERIFICATION_TOKEN_NOT_FOUND(6001, "Verification token not found", HttpStatusCode.valueOf(404)),
+                        HttpStatusCode.valueOf(400)),        VERIFICATION_TOKEN_NOT_FOUND(6001, "Verification token not found", HttpStatusCode.valueOf(404)),
         VERIFICATION_TOKEN_ALREADY_VERIFIED(6002, "Verification token has already been verified",
                         HttpStatusCode.valueOf(400)),
         INVALID_VERIFICATION_TOKEN_TYPE(6003, "Invalid verification token type", HttpStatusCode.valueOf(400)),
-        VERIFICATION_TOKEN_EXPIRED(6004, "Verification token has expired", HttpStatusCode.valueOf(400));
+        VERIFICATION_TOKEN_EXPIRED(6004, "Verification token has expired", HttpStatusCode.valueOf(400)),
+        CONFIG_NOT_FOUND(8001, "System configuration not found", HttpStatusCode.valueOf(404)),
+        CONFIG_KEY_EXISTS(8002, "Configuration key already exists", HttpStatusCode.valueOf(400));
 
         private int code;
         private String message;
