@@ -1,8 +1,8 @@
-# Microservices Implementation Guide
+# One-Day Microservices Implementation Guide
 
-## Service Template Structure
+## Quick Start Service Template
 
-Each microservice will follow a standardized Spring Boot structure:
+Each microservice will follow a simplified Spring Boot structure for rapid development:
 
 ```
 service-name/
@@ -10,25 +10,21 @@ service-name/
 │   ├── ServiceApplication.java
 │   ├── config/
 │   │   ├── SecurityConfig.java
-│   │   ├── DatabaseConfig.java
-│   │   └── KafkaConfig.java
+│   │   └── DatabaseConfig.java
 │   ├── controller/
 │   ├── service/
 │   ├── repository/
 │   ├── entity/
-│   ├── dto/
-│   ├── exception/
-│   └── event/
+│   └── dto/
 ├── src/main/resources/
 │   ├── application.yml
-│   ├── bootstrap.yml
-│   └── db/migration/
-└── Dockerfile
+│   └── data.sql (for initial data)
+└── Dockerfile (optional for day 1)
 ```
 
-## 1. IAM Service Implementation
+## 1. Authentication Service Implementation
 
-### Dependencies (pom.xml)
+### Minimal Dependencies (pom.xml)
 ```xml
 <dependencies>
     <dependency>
@@ -44,11 +40,10 @@ service-name/
         <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
     </dependency>
-    <dependency>
-        <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
     </dependency>
     <dependency>
@@ -565,54 +560,92 @@ services:
       - iam_db_data:/var/lib/postgresql/data
 
 volumes:
-  iam_db_data:
+  auth_db_data:
+  loan_db_data:
+  support_db_data:
 ```
 
-## 7. Testing Strategy
+## 4. Quick Testing Strategy
 
-### Integration Tests
+### Basic Integration Tests
 ```java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(properties = {
     "spring.datasource.url=jdbc:h2:mem:testdb",
     "spring.jpa.hibernate.ddl-auto=create-drop"
 })
-@Testcontainers
-class LoanApplicationServiceIntegrationTest {
-    
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:15")
-            .withDatabaseName("test_db")
-            .withUsername("test")
-            .withPassword("test");
-    
-    @Container
-    static KafkaContainer kafka = new KafkaContainer(DockerImageName.parse("confluentinc/cp-kafka:latest"));
+class BasicServiceIntegrationTest {
     
     @Autowired
     private TestRestTemplate restTemplate;
     
     @Test
-    void shouldSubmitLoanApplication() {
-        // Given
+    void shouldAuthenticateUser() {
+        LoginRequest request = new LoginRequest("admin", "password");
+        
+        ResponseEntity<TokenResponse> response = restTemplate.postForEntity(
+            "/auth/login", 
+            request, 
+            TokenResponse.class
+        );
+        
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getToken()).isNotNull();
+    }
+    
+    @Test
+    void shouldCreateLoanApplication() {
+        // Basic test for loan service
         LoanApplicationRequest request = LoanApplicationRequest.builder()
             .applicantName("John Doe")
             .requestedAmount(BigDecimal.valueOf(10000))
-            .productId(1L)
             .build();
         
-        // When
         ResponseEntity<LoanApplicationResponse> response = restTemplate.postForEntity(
-            "/api/loan-applications", 
+            "/loans/applications", 
             request, 
             LoanApplicationResponse.class
         );
         
-        // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertThat(response.getBody().getStatus()).isEqualTo("SUBMITTED");
     }
 }
 ```
 
-This implementation guide provides the technical foundation for migrating your monolithic loan management system to microservices. Each service follows Spring Boot best practices with proper configuration, monitoring, and testing strategies.
+## 5. One-Day Implementation Checklist
+
+### Hour 1-2: Setup
+- [ ] Create 3 Spring Boot projects
+- [ ] Configure basic application.yml for each service
+- [ ] Setup local databases (H2 for speed, PostgreSQL for production)
+- [ ] Basic project structure
+
+### Hour 3-4: Authentication Service
+- [ ] Move authentication controllers and services
+- [ ] Configure JWT token generation and validation
+- [ ] Basic user management endpoints
+- [ ] Test login functionality
+
+### Hour 5-6: Loan Service
+- [ ] Move loan-related controllers and services
+- [ ] Setup loan database schema
+- [ ] Implement basic CRUD operations
+- [ ] Test loan creation and retrieval
+
+### Hour 7-8: Support Service & Integration
+- [ ] Move document and notification services
+- [ ] Basic file upload/download
+- [ ] Inter-service communication setup
+- [ ] End-to-end testing
+- [ ] Documentation and rollback preparation
+
+## Quick Deployment Notes
+
+This implementation guide provides a rapid migration path for converting your monolithic loan management system to 3 core microservices within 8 hours. Focus on moving functionality quickly rather than perfect architecture - optimization can be done later.
+
+### Key Shortcuts for One-Day Success:
+1. **Use H2 database** for initial setup (faster than PostgreSQL setup)
+2. **Skip complex patterns** like Saga or Event Sourcing initially
+3. **Direct REST calls** instead of message queues
+4. **Shared JWT secret** across all services for simplicity
+5. **Minimal error handling** - focus on happy path first

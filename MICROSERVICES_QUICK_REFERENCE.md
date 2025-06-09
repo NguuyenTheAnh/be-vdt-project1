@@ -1,54 +1,41 @@
-# Microservices Migration Quick Reference
+# One-Day Microservices Migration Quick Reference
 
-## Service Architecture Overview
+## Simplified Service Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        API Gateway (Port 8080)                  │
-│                    Spring Cloud Gateway                         │
+│                    Frontend Application                         │
+│                    (Existing - No Changes)                      │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
                       ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    Service Registry                             │
-│                    Eureka Server (Port 8761)                   │
-└─────────────────────────────────────────────────────────────────┘
+                  Static Routing
+                   (No Gateway)
 
 ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│   IAM Service    │  │ Loan Product     │  │ Loan Application │
-│   Port: 8081     │  │ Service          │  │ Service          │
-│                  │  │ Port: 8082       │  │ Port: 8083       │
+│ Authentication   │  │    Loan          │  │   Support        │
+│   Service        │  │   Service        │  │   Service        │
+│  Port: 8081      │  │  Port: 8082      │  │  Port: 8083      │
+│                  │  │                  │  │                  │
+│ - User Auth      │  │ - Loan Products  │  │ - Documents      │
+│ - JWT Tokens     │  │ - Applications   │  │ - Notifications  │
+│ - Basic Users    │  │ - Loan Mgmt      │  │ - Simple Reports │
 └──────────────────┘  └──────────────────┘  └──────────────────┘
-
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│ Document Service │  │ Disbursement     │  │ Notification     │
-│ Port: 8084       │  │ Service          │  │ Service          │
-│                  │  │ Port: 8085       │  │ Port: 8086       │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
-
-┌──────────────────┐  ┌──────────────────┐
-│ Reporting Service│  │ Config Server    │
-│ Port: 8087       │  │ Port: 8888       │
-└──────────────────┘  └──────────────────┘
 ```
 
-## Service Responsibilities
+## Service Responsibilities (Simplified)
 
-| Service | Responsibility | Key Entities | Database |
-|---------|---------------|--------------|----------|
-| **IAM Service** | Authentication, Authorization, User Management | User, Role, Permission | iam_db |
-| **Loan Product Service** | Product catalog, configurations, eligibility | LoanProduct, InterestRate, EligibilityCriteria | loan_product_db |
-| **Loan Application Service** | Application lifecycle, approval workflow | LoanApplication, ApplicationStatus | loan_application_db |
-| **Document Service** | File management, document validation | Document, DocumentType | document_db |
-| **Disbursement Service** | Payment processing, transaction management | DisbursementTransaction, PaymentSchedule | disbursement_db |
-| **Notification Service** | Multi-channel notifications | Notification, NotificationTemplate | notification_db |
-| **Reporting Service** | Business reports, analytics | Report, ReportConfiguration | reporting_db |
+| Service | Responsibility | Key Components | Database |
+|---------|----------------|---------------|----------|
+| **Authentication Service** | Login, JWT tokens, basic user management | AuthController, UserService, JwtUtil | auth_db |
+| **Loan Service** | Loan products, applications, loan management | LoanController, LoanService, LoanProductService | loan_db |
+| **Support Service** | File uploads, notifications, basic reports | DocumentController, NotificationService | support_db |
 
-## Port Assignments
+## Port Assignments & Quick Access
 
-| Service | Port | Health Check URL |
-|---------|------|------------------|
-| API Gateway | 8080 | http://localhost:8080/actuator/health |
+| Service | Port | Health Check URL | Main Endpoints |
+|---------|------|------------------|----------------|
+| Authentication Service | 8081 | http://localhost:8081/actuator/health | `/auth/login`, `/auth/register`, `/users/*` |
 | IAM Service | 8081 | http://localhost:8081/actuator/health |
 | Loan Product Service | 8082 | http://localhost:8082/actuator/health |
 | Loan Application Service | 8083 | http://localhost:8083/actuator/health |
@@ -111,57 +98,81 @@ GET    /api/files/{id}/download     - File download
 ```
 GET    /api/disbursements           - List disbursements
 POST   /api/disbursements           - Create disbursement
-GET    /api/disbursements/{id}      - Get disbursement
-PUT    /api/disbursements/{id}      - Update disbursement
-POST   /api/disbursements/{id}/process - Process disbursement
-GET    /api/disbursements/{id}/status  - Get status
+| Loan Service | 8082 | http://localhost:8082/actuator/health | `/loans/*`, `/loan-products/*`, `/applications/*` |
+| Support Service | 8083 | http://localhost:8083/actuator/health | `/documents/*`, `/notifications/*`, `/reports/*` |
+
+## Essential API Endpoints
+
+### Authentication Service (Port 8081)
+```
+POST   /auth/login                  - User login (returns JWT)
+POST   /auth/register               - User registration
+POST   /auth/refresh                - Refresh JWT token
+GET    /users/profile               - Get user profile
+PUT    /users/profile               - Update user profile
 ```
 
-### Notifications (Notification Service)
+### Loan Service (Port 8082)
 ```
-GET    /api/notifications           - List notifications
-POST   /api/notifications/send      - Send notification
-GET    /api/notifications/{id}      - Get notification
-PUT    /api/notifications/{id}      - Update notification
-GET    /api/notifications/templates - List templates
-POST   /api/notifications/templates - Create template
-```
-
-### Reports (Reporting Service)
-```
-GET    /api/reports                 - List reports
-POST   /api/reports/generate        - Generate report
-GET    /api/reports/{id}            - Get report
-GET    /api/analytics/dashboard     - Dashboard data
-GET    /api/analytics/metrics       - System metrics
+GET    /loan-products               - List loan products
+GET    /loan-products/{id}          - Get loan product details
+POST   /loans/applications          - Create loan application
+GET    /loans/applications          - List user's applications
+GET    /loans/applications/{id}     - Get application details
+PUT    /loans/applications/{id}     - Update application
+POST   /loans/applications/{id}/submit - Submit for approval
 ```
 
-## Environment Variables
+### Support Service (Port 8083)
+```
+POST   /documents/upload            - Upload document
+GET    /documents/{id}              - Download document
+DELETE /documents/{id}              - Delete document
+POST   /notifications/send          - Send notification
+GET    /reports/basic               - Get basic reports
+GET    /reports/loans               - Get loan reports
+```
 
-### Common Environment Variables
+## Quick Configuration Reference
+
+### Application Properties (Each Service)
+```yaml
+server:
+  port: 808X  # X = 1,2,3 for respective services
+
+spring:
+  application:
+    name: service-name
+  datasource:
+    url: jdbc:h2:mem:testdb  # For quick setup
+    # url: jdbc:postgresql://localhost:5432/service_db  # For production
+  jpa:
+    hibernate:
+      ddl-auto: create-drop  # For development
+    show-sql: true
+
+jwt:
+  secret: mySecretKey  # Same across all services for simplicity
+  expiration: 86400000  # 24 hours
+```
+
+### Environment Variables (Simplified)
 ```bash
-# Database Configuration
+# Database (if using PostgreSQL)
 DB_HOST=localhost
 DB_PORT=5432
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
+DB_USERNAME=loan_user
+DB_PASSWORD=loan_password
 
-# JWT Configuration
-JWT_SECRET=your-jwt-secret-key
+# JWT (shared across services)
+JWT_SECRET=oneday-migration-secret-key
 JWT_EXPIRATION=86400000
 
-# Kafka Configuration
-KAFKA_BOOTSTRAP_SERVERS=localhost:9092
-
-# Eureka Configuration
-EUREKA_SERVER_URL=http://localhost:8761/eureka/
-
-# Redis Configuration (for API Gateway)
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# Environment
-ENVIRONMENT=development
+# Service URLs (for inter-service communication)
+AUTH_SERVICE_URL=http://localhost:8081
+LOAN_SERVICE_URL=http://localhost:8082
+SUPPORT_SERVICE_URL=http://localhost:8083
+```
 LOG_LEVEL=INFO
 ```
 
@@ -287,56 +298,83 @@ done
 
 ### View Kafka topics
 ```bash
-docker exec -it kafka kafka-topics --bootstrap-server localhost:9092 --list
-```
+## Quick Development Commands
 
-### Check database connections
+### Start all services locally
 ```bash
-# IAM Database
-psql -h localhost -U iam_user -d iam_db -c "SELECT COUNT(*) FROM users;"
+# Terminal 1: Authentication Service
+cd authentication-service
+mvn spring-boot:run
 
-# Loan Product Database
-psql -h localhost -U loan_product_user -d loan_product_db -c "SELECT COUNT(*) FROM loan_products;"
+# Terminal 2: Loan Service  
+cd loan-service
+mvn spring-boot:run
+
+# Terminal 3: Support Service
+cd support-service
+mvn spring-boot:run
 ```
 
-## Troubleshooting
+### Quick health checks
+```bash
+# Check all services are running
+curl http://localhost:8081/actuator/health
+curl http://localhost:8082/actuator/health  
+curl http://localhost:8083/actuator/health
+```
 
-### Service Discovery Issues
-1. Check Eureka server is running: `curl http://localhost:8761`
-2. Verify service registration in Eureka dashboard
-3. Check service configuration: `eureka.client.service-url.defaultZone`
+### Test basic functionality
+```bash
+# Test authentication
+curl -X POST http://localhost:8081/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"password"}'
 
-### Database Connection Issues
-1. Verify database is running and accessible
-2. Check connection string format
-3. Validate username/password
-4. Check firewall rules
+# Test loan service (with JWT token)
+curl -X GET http://localhost:8082/loan-products \
+  -H "Authorization: Bearer <your-jwt-token>"
+```
 
-### Authentication Issues
-1. Verify JWT secret key consistency across services
-2. Check token expiration settings
-3. Validate user credentials in IAM database
-4. Check API Gateway authentication filter
+## One-Day Troubleshooting
 
-### Performance Issues
-1. Check application metrics in Grafana
-2. Monitor database query performance
-3. Review service logs for errors
-4. Analyze network latency between services
+### Common Issues & Quick Fixes
 
-### Message Queue Issues
-1. Verify Kafka is running: `docker-compose ps kafka`
-2. Check topic creation: `kafka-topics --list`
-3. Monitor consumer lag
-4. Review message serialization/deserialization
+#### Service Won't Start
+1. Check port conflicts: `netstat -ano | findstr :8081`
+2. Verify Java version: `java -version` (should be 21)
+3. Check database connection in application.yml
+4. Look at startup logs for specific errors
 
-## Security Checklist
+#### Database Connection Issues
+1. **H2 Database**: Should work out of the box
+2. **PostgreSQL**: Verify service is running and credentials are correct
+3. Check application.yml database configuration
+4. Try connecting with database client first
 
-- [ ] All inter-service communication uses HTTPS
-- [ ] JWT tokens have appropriate expiration times
-- [ ] Database connections use encrypted passwords
-- [ ] API Gateway has rate limiting enabled
-- [ ] Service-to-service authentication is configured
+#### JWT Token Issues
+1. Ensure same secret key across all services
+2. Check token expiration time is reasonable
+3. Verify token format (should start with "Bearer ")
+4. Test token generation in Auth Service first
+
+#### Inter-Service Communication
+1. Verify services are running on correct ports
+2. Check network connectivity between services
+3. Use simple HTTP calls initially (avoid complex patterns)
+4. Test with Postman before integrating frontend
+
+### Emergency Rollback Steps
+1. Stop all microservices: `Ctrl+C` in terminals
+2. Start original monolith: `mvn spring-boot:run` in original project
+3. Restore database from backup if needed
+4. Verify monolith is working properly
+
+## Quick Reference Links
+
+- **H2 Console**: http://localhost:808X/h2-console (if H2 is used)
+- **Actuator Health**: http://localhost:808X/actuator/health
+- **API Testing**: Use Postman or curl commands above
+- **Logs**: Check console output for each service terminal
 - [ ] Sensitive configuration is externalized
 - [ ] Security headers are properly set
 - [ ] Input validation is implemented
