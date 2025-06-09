@@ -202,6 +202,69 @@ This document outlines a comprehensive strategy to migrate the current monolithi
 
 ### Phase 3: Core Business Services (Weeks 9-16)
 1. **Loan Product Service** (Weeks 9-10)
+   - Extract loan product management
+   - Migrate product catalog and configurations
+   - Setup dedicated database
+   - Implement product eligibility logic
+
+2. **Document Management Service** (Weeks 11-12)
+   - Extract document handling logic
+   - Setup file storage infrastructure
+   - Implement document validation workflows
+   - Configure document types and templates
+
+3. **Loan Application Service** (Weeks 13-14)
+   - Extract application lifecycle management
+   - Implement state machine for approvals
+   - Setup application database
+   - Configure workflow rules
+
+4. **Disbursement Service** (Weeks 15-16)
+   - Extract disbursement processing
+   - Setup payment infrastructure
+   - Implement transaction logging
+   - Configure reconciliation processes
+
+### Phase 4: Supporting Services (Weeks 17-20)
+1. **Notification Service** (Weeks 17-18)
+   - Extract notification logic
+   - Setup multi-channel delivery (email, SMS, push)
+   - Implement notification templates
+   - Configure delivery preferences
+
+2. **Reporting Service** (Weeks 19-20)
+   - Extract reporting and analytics
+   - Setup data warehouse/lake
+   - Implement report generation
+   - Configure dashboard APIs
+
+### Phase 5: System Integration & Optimization (Weeks 21-24)
+1. **Data Migration & Verification** (Week 21)
+   - Complete data migration scripts
+   - Verify data consistency across services
+   - Run reconciliation reports
+   - Test backup/restore procedures
+
+2. **Performance Testing & Optimization** (Week 22)
+   - Comprehensive load testing
+   - Performance benchmarking
+   - Query optimization
+   - Caching implementation
+
+3. **Security Hardening** (Week 23)
+   - Security audit across all services
+   - Implement service-to-service authentication
+   - Setup secrets management
+   - Configure network security
+
+4. **Go-Live & Monitoring** (Week 24)
+   - Blue-green deployment
+   - Real-time monitoring setup
+   - Incident response procedures
+   - Documentation finalization
+
+### Phase 3: Core Business Services (Weeks 9-16)
+1. **Loan Product Service** (Weeks 9-10)
 2. **Document Management Service** (Weeks 11-12)
 3. **Loan Application Service** (Weeks 13-14)
 4. **Disbursement Service** (Weeks 15-16)
