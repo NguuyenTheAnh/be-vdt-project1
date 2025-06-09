@@ -1,112 +1,116 @@
-# Microservices Migration Checklist
+# Microservices Migration Checklist - Dự Án Cá Nhân
 
-## Pre-Migration Phase
+## Pre-Migration Phase - Chuẩn Bị
 
-### Infrastructure Assessment
+### Kiến Thức và Kỹ Năng
+- [ ] Đánh giá kiến thức hiện tại về Spring Boot
+- [ ] Học cơ bản về microservices concepts (patterns, pros/cons)
+- [ ] Làm quen với Docker basics
+- [ ] Hiểu về REST API design principles
+- [ ] Setup development environment (IDE, Docker Desktop, etc.)
+- [ ] Clone và chạy được monolithic application hiện tại
+
+### Hiểu Hệ Thống Hiện Tại
 - [ ] Document current monolithic architecture
-- [ ] Identify system dependencies and integrations
-- [ ] Assess current database structure and data relationships
-- [ ] Evaluate current deployment processes
-- [ ] Document configuration management approach
-- [ ] Identify potential security vulnerabilities
+- [ ] Identify main components và dependencies
+- [ ] Map out database schema và relationships
+- [ ] Understand current API endpoints
+- [ ] Document configuration và environment setup
+- [ ] Test current application functionality
 
-### Team Preparation
-- [ ] Assess team's microservices knowledge and skills
-- [ ] Plan training sessions for Docker, Kubernetes, Spring Cloud
-- [ ] Establish DevOps practices and CI/CD pipelines
-- [ ] Define coding standards and best practices for microservices
-- [ ] Set up development environment templates
-- [ ] Create communication protocols between teams
+### Learning Goals Setup
+- [ ] Define specific learning objectives cho project này
+- [ ] Set realistic timeline based on available time
+- [ ] Identify areas muốn focus (Spring Cloud, Docker, etc.)
+- [ ] Setup progress tracking method (notes, journal, etc.)
+- [ ] Plan time allocation per week/day
 
-### Technology Stack Decisions
-- [ ] Choose container orchestration platform (Kubernetes/Docker Swarm)
-- [ ] Select service discovery mechanism (Eureka/Consul)
-- [ ] Choose API Gateway solution (Spring Cloud Gateway/Kong)
-- [ ] Select monitoring and logging tools (ELK Stack/Prometheus+Grafana)
-- [ ] Decide on messaging system (RabbitMQ/Apache Kafka)
-- [ ] Choose configuration management (Spring Cloud Config/Kubernetes ConfigMaps)
+## Phase 1: Learning & Infrastructure Setup (Tuần 1-4)
 
-## Phase 1: Infrastructure & Foundation (Weeks 1-4)
+### Tuần 1-2: Learning Foundation
+- [ ] Complete Spring Boot microservices tutorial online
+- [ ] Read about microservices patterns (Database per service, API Gateway, etc.)
+- [ ] Practice with Docker: create simple containers
+- [ ] Setup local development environment
+- [ ] Create Git branches cho microservices development
+- [ ] Document learning notes và concepts
 
-### Week 1-2: Development Environment
-- [ ] Set up Docker development environment
-- [ ] Create base Spring Boot microservice template
-- [ ] Establish Git repository structure for microservices
-- [ ] Set up local Kubernetes cluster (minikube/kind)
-- [ ] Configure IDE and development tools
-- [ ] Create shared libraries and common dependencies
+### Tuần 3-4: Basic Infrastructure
+- [ ] Create basic Spring Boot service template
+- [ ] Setup Eureka Service Discovery locally
+- [ ] Implement simple API Gateway với Spring Cloud Gateway
+- [ ] Create basic health check endpoints
+- [ ] Setup local logging configuration
+- [ ] Practice với Docker Compose cho multi-service setup
+- [ ] Document setup procedures và troubleshooting notes
 
-### Week 3-4: Core Infrastructure
-- [ ] Deploy Eureka Service Discovery
-- [ ] Set up Spring Cloud Config Server
-- [ ] Implement API Gateway with Spring Cloud Gateway
-- [ ] Configure load balancing and routing rules
-- [ ] Set up monitoring infrastructure (Prometheus/Grafana)
-- [ ] Implement centralized logging (ELK Stack)
-- [ ] Establish health check endpoints
+## Phase 2: First Service - Authentication (Tuần 5-8)
 
-## Phase 2: Authentication Service (Weeks 5-8)
+### Tuần 5: Service Design & Planning
+- [ ] Design IAM Service architecture
+- [ ] Plan database schema cho user management
+- [ ] Design API endpoints cho authentication
+- [ ] Create service project structure
+- [ ] Setup separate database cho IAM service
+- [ ] Document service responsibilities và boundaries
 
-### Week 5: Service Extraction
-- [ ] Create IAM Service structure
-- [ ] Extract authentication logic from monolith
-- [ ] Implement JWT token management
-- [ ] Set up user management endpoints
-- [ ] Create role and permission management
+### Tuần 6: Core Implementation
+- [ ] Implement basic user entity và repository
+- [ ] Create authentication controller với login/register
+- [ ] Implement JWT token generation và validation
+- [ ] Setup password encoding và security
+- [ ] Create basic user management endpoints
+- [ ] Add validation và error handling
 
-### Week 6: Database Migration
-- [ ] Create separate database for IAM service
-- [ ] Migrate user-related tables
-- [ ] Implement data migration scripts
-- [ ] Establish database connection pooling
-- [ ] Set up database monitoring
+### Tuần 7: Integration & Testing
+- [ ] Integrate với Eureka service discovery
+- [ ] Setup service registration và health checks
+- [ ] Create integration tests cho authentication flows
+- [ ] Test JWT token validation across services
+- [ ] Implement proper error responses
+- [ ] Document API endpoints và usage
 
-### Week 7: Integration & Testing
-- [ ] Implement OAuth2/JWT integration
-- [ ] Create authentication filters for other services
-- [ ] Set up integration tests
-- [ ] Perform load testing on authentication endpoints
-- [ ] Implement security hardening measures
+### Tuần 8: Polish & Learning Review
+- [ ] Add logging và monitoring
+- [ ] Security review và hardening
+- [ ] Performance testing với simple load
+- [ ] Document lessons learned
+- [ ] Refactor code based on learnings
+- [ ] Prepare for next service implementation
 
-### Week 8: Deployment & Monitoring
-- [ ] Deploy IAM service to staging environment
-- [ ] Configure monitoring and alerting
-- [ ] Perform security penetration testing
-- [ ] Document API endpoints and authentication flows
-- [ ] Train team on new authentication mechanisms
+## Phase 3: Business Services Implementation (Tuần 9-16)
 
-## Phase 3: Core Business Services (Weeks 9-16)
+### Tuần 9-10: Loan Product Service
+- [ ] Extract loan product logic từ monolith
+- [ ] Design service database schema
+- [ ] Implement CRUD operations cho loan products
+- [ ] Add product configuration management
+- [ ] Integrate với IAM service cho authentication
+- [ ] Create comprehensive tests
 
-### Week 9-10: Loan Product Service
-- [ ] Extract loan product management logic
-- [ ] Create separate database schema
-- [ ] Implement CRUD operations for loan products
-- [ ] Set up product catalog management
-- [ ] Create product configuration endpoints
-- [ ] Implement data validation and business rules
+### Tuần 11-12: Document Service
+- [ ] Design file storage strategy (local/cloud)
+- [ ] Implement file upload/download functionality
+- [ ] Add document validation và processing
+- [ ] Setup virus scanning (optional cho learning)
+- [ ] Implement document versioning
+- [ ] Test với various file types và sizes
 
-### Week 11-12: Loan Application Service
-- [ ] Extract loan application processing logic
+### Tuần 13-14: Loan Application Service
+- [ ] Extract application processing logic
 - [ ] Design workflow management system
 - [ ] Implement application status tracking
 - [ ] Create approval/rejection workflows
-- [ ] Set up integration with external credit scoring
-- [ ] Implement document requirements management
+- [ ] Integrate với Product và Document services
+- [ ] Add comprehensive business logic validation
 
-### Week 13-14: Document Service
-- [ ] Extract document management functionality
-- [ ] Implement file upload/download capabilities
-- [ ] Set up document storage (AWS S3/MinIO)
-- [ ] Create document validation and processing
-- [ ] Implement document versioning
-- [ ] Set up virus scanning and security checks
-
-### Week 15-16: Integration Testing
-- [ ] Test inter-service communication
+### Tuần 15-16: Service Integration & Testing
+- [ ] Test inter-service communication patterns
 - [ ] Validate data consistency across services
 - [ ] Perform end-to-end workflow testing
-- [ ] Load test core business processes
-- [ ] Validate security across service boundaries
+- [ ] Load test critical business processes
+- [ ] Document service interactions và dependencies
+- [ ] Optimize performance bottlenecks
 
 ## Phase 4: Supporting Services (Weeks 17-20)
 

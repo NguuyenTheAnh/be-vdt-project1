@@ -1,29 +1,36 @@
-# Microservices Implementation Guide
+# Microservices Implementation Guide - Dự Án Cá Nhân
+
+## Tổng Quan
+Guide này được thiết kế cho developer làm việc một mình, với focus vào:
+- Learning microservices patterns
+- Practical implementation với Spring Boot/Cloud
+- Step-by-step approach phù hợp cho personal project
+- Code examples có thể copy và modify
 
 ## Service Template Structure
 
-Each microservice will follow a standardized Spring Boot structure:
+Mỗi microservice sẽ follow cấu trúc Spring Boot chuẩn, simplified cho learning:
 
 ```
 service-name/
-├── src/main/java/com/loanmanagement/{service}/
+├── src/main/java/com/vdt_project1/loanmanagement/{service}/
 │   ├── ServiceApplication.java
 │   ├── config/
-│   │   ├── SecurityConfig.java
-│   │   ├── DatabaseConfig.java
-│   │   └── KafkaConfig.java
+│   │   ├── SecurityConfig.java (nếu cần)
+│   │   └── DatabaseConfig.java (nếu cần)
 │   ├── controller/
 │   ├── service/
 │   ├── repository/
 │   ├── entity/
 │   ├── dto/
-│   ├── exception/
-│   └── event/
+│   └── exception/
 ├── src/main/resources/
 │   ├── application.yml
-│   ├── bootstrap.yml
-│   └── db/migration/
-└── Dockerfile
+│   └── db/migration/ (nếu dùng Flyway)
+├── src/test/java/
+│   └── integration và unit tests
+├── Dockerfile (cho containerization)
+└── README.md (document service-specific info)
 ```
 
 ## 1. IAM Service Implementation

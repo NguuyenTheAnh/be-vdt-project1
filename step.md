@@ -1,23 +1,31 @@
-# Kế Hoạch Di Chuyển Microservices Chi Tiết
+# Kế Hoạch Di Chuyển Microservices - Dự Án Cá Nhân
 
 ## Tổng Quan Dự Án
 
 ### Mô Tả Hiện Trạng
-Hệ thống quản lý khoản vay hiện tại được xây dựng dưới dạng monolithic architecture sử dụng Spring Boot. Hệ thống bao gồm các tính năng chính:
-- Quản lý người dùng và xác thực
-- Quản lý sản phẩm vay
-- Xử lý đơn xin vay
-- Quản lý tài liệu
-- Giải ngân
-- Thông báo
-- Báo cáo
+Hệ thống quản lý khoản vay hiện tại của bạn được xây dựng dưới dạng monolithic architecture sử dụng Spring Boot. Đây là dự án học tập cá nhân nhằm:
+- Hiểu sâu về microservices architecture
+- Thực hành với Spring Cloud ecosystem
+- Xây dựng portfolio project thực tế
+- Học các best practices trong enterprise development
 
-### Mục Tiêu Di Chuyển
-1. **Tăng tính mở rộng**: Cho phép scale từng service độc lập
-2. **Cải thiện hiệu suất**: Tối ưu hóa từng service riêng biệt
-3. **Tăng tính ổn định**: Giảm thiểu ảnh hưởng khi một service gặp sự cố
-4. **Tăng tốc độ phát triển**: Các team có thể phát triển độc lập
-5. **Công nghệ linh hoạt**: Có thể sử dụng công nghệ khác nhau cho từng service
+### Mục Tiêu Học Tập và Phát Triển
+1. **Hiểu về Microservices**: Architecture patterns, service design principles
+2. **Thực hành Spring Cloud**: Service discovery, config server, API gateway
+3. **Container Technology**: Docker, container orchestration basics
+4. **Database Design**: Service-specific databases, data consistency
+5. **API Design**: RESTful services, inter-service communication
+6. **DevOps Practices**: CI/CD, monitoring, logging
+7. **Problem Solving**: Troubleshooting distributed systems
+
+### Timeline Linh Hoạt
+**Lưu ý quan trọng**: Timeline này được thiết kế cho developer làm một mình trong thời gian rảnh. Bạn có thể điều chỉnh tốc độ tùy theo:
+- Thời gian có thể dành cho project (1-2 giờ/ngày vs 4-6 giờ/ngày)
+- Kinh nghiệm hiện tại với Spring Boot và microservices
+- Mức độ detail muốn đi sâu vào từng concept
+- Các ưu tiên khác trong cuộc sống
+
+**Estimated Timeline**: 3-6 tháng (thay vì 6 tháng cho team)
 
 ## Kiến Trúc Microservices Mục Tiêu
 
