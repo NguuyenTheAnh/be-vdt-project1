@@ -11,6 +11,7 @@ import com.vdt_project1.loan_management.enums.NotificationType;
 import com.vdt_project1.loan_management.exception.AppException;
 import com.vdt_project1.loan_management.exception.ErrorCode;
 import com.vdt_project1.loan_management.mapper.LoanApplicationMapper;
+import com.vdt_project1.loan_management.repository.DisbursementTransactionRepository;
 import com.vdt_project1.loan_management.repository.DocumentRepository;
 import com.vdt_project1.loan_management.repository.LoanApplicationRepository;
 import com.vdt_project1.loan_management.repository.LoanProductRepository;
@@ -41,6 +42,7 @@ public class LoanApplicationService {
     UserService userService;
     EmailService emailService;
     NotificationService notificationService;
+    DisbursementTransactionRepository disbursementTransactionRepository;
 
     private LoanProduct findLoanProductById(Long id) {
         return loanProductRepository.findById(id)
@@ -321,6 +323,26 @@ public class LoanApplicationService {
                             .date(sqlDate.toLocalDate())
                             .totalApprovedAmount(totalAmount)
                             .applicationCount(count.intValue())
+                            .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<DisbursedAmountByTimeResponse> getDisbursedAmountByTime(LocalDateTime startDate, LocalDateTime endDate) {
+        log.info("Fetching disbursed amount statistics from {} to {}", startDate, endDate);
+        List<Object[]> results = disbursementTransactionRepository.getDisbursedAmountByDateRange(startDate, endDate);
+
+        return results.stream()
+                .map(result -> {
+                    java.sql.Date sqlDate = (java.sql.Date) result[0];
+                    Long totalAmount = (Long) result[1];
+                    Long count = (Long) result[2];
+
+                    return DisbursedAmountByTimeResponse.builder()
+                            .date(sqlDate.toLocalDate())
+                            .totalDisbursedAmount(totalAmount)
+                            .disbursedCount(count)
                             .build();
                 })
                 .collect(java.util.stream.Collectors.toList());

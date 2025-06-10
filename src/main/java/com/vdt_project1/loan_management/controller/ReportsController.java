@@ -97,6 +97,32 @@ public class ReportsController {
     }
 
     /**
+     * Báo cáo tổng số tiền đã giải ngân theo thời gian
+     * Phù hợp để vẽ Line chart
+     */
+    @GetMapping("/applications/disbursed-amount-by-time")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<List<DisbursedAmountByTimeResponse>> getDisbursedAmountByTime(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        log.info("Fetching disbursed amount statistics from {} to {}", startDate, endDate);
+
+        // Convert LocalDate to LocalDateTime for service method
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
+
+        List<DisbursedAmountByTimeResponse> statistics = loanApplicationService
+                .getDisbursedAmountByTime(startDateTime, endDateTime);
+
+        return ApiResponse.<List<DisbursedAmountByTimeResponse>>builder()
+                .code(1000)
+                .message("Disbursed amount by time statistics retrieved successfully")
+                .data(statistics)
+                .build();
+    }
+
+    /**
      * Lấy tổng quan báo cáo (Dashboard summary)
      */
     @GetMapping("/dashboard/summary")

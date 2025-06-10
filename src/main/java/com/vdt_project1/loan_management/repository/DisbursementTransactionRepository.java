@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface DisbursementTransactionRepository extends JpaRepository<DisbursementTransaction, Long> {
@@ -28,4 +29,13 @@ public interface DisbursementTransactionRepository extends JpaRepository<Disburs
             "ORDER BY dt.transactionDate DESC")
     Page<DisbursementTransaction> findByUserIdOrderByTransactionDateDesc(@Param("userId") Long userId,
             Pageable pageable);
+
+    // Statistics query for disbursed amount by date range
+    @Query("SELECT DATE(dt.transactionDate) as date, SUM(dt.amount) as totalAmount, COUNT(dt) as count " +
+           "FROM DisbursementTransaction dt " +
+           "WHERE dt.transactionDate >= :startDate AND dt.transactionDate <= :endDate " +
+           "GROUP BY DATE(dt.transactionDate) " +
+           "ORDER BY DATE(dt.transactionDate)")
+    List<Object[]> getDisbursedAmountByDateRange(@Param("startDate") LocalDateTime startDate,
+                                                @Param("endDate") LocalDateTime endDate);
 }
