@@ -126,7 +126,7 @@ public class ReportsController {
          * Lấy tổng quan báo cáo (Dashboard summary)
          */
         @GetMapping("/dashboard/summary")
-        @PreAuthorize("hasRole('ADMIN')")
+        @PreAuthorize("!hasRole('USER')")
         public ApiResponse<DashboardSummaryResponse> getDashboardSummary() {
                 log.info("Fetching dashboard summary");
 
