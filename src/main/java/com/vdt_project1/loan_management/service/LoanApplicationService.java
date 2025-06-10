@@ -329,7 +329,8 @@ public class LoanApplicationService {
     }
 
     @Transactional(readOnly = true)
-    public List<DisbursedAmountByTimeResponse> getDisbursedAmountByTime(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<DisbursedAmountByTimeResponse> getDisbursedAmountByTime(LocalDateTime startDate,
+            LocalDateTime endDate) {
         log.info("Fetching disbursed amount statistics from {} to {}", startDate, endDate);
         List<Object[]> results = disbursementTransactionRepository.getDisbursedAmountByDateRange(startDate, endDate);
 

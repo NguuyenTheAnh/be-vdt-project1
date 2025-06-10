@@ -12,30 +12,31 @@ import java.util.List;
 
 public interface DisbursementTransactionRepository extends JpaRepository<DisbursementTransaction, Long> {
 
-    List<DisbursementTransaction> findByApplicationIdOrderByTransactionDateDesc(Long applicationId);
+        List<DisbursementTransaction> findByApplicationIdOrderByTransactionDateDesc(Long applicationId);
 
-    Page<DisbursementTransaction> findByApplicationIdOrderByTransactionDateDesc(Long applicationId, Pageable pageable);
+        Page<DisbursementTransaction> findByApplicationIdOrderByTransactionDateDesc(Long applicationId,
+                        Pageable pageable);
 
-    @Query("SELECT COALESCE(SUM(dt.amount), 0) FROM DisbursementTransaction dt WHERE dt.applicationId = :applicationId")
-    Long getTotalDisbursedAmount(@Param("applicationId") Long applicationId);
+        @Query("SELECT COALESCE(SUM(dt.amount), 0) FROM DisbursementTransaction dt WHERE dt.applicationId = :applicationId")
+        Long getTotalDisbursedAmount(@Param("applicationId") Long applicationId);
 
-    @Query("SELECT COUNT(dt) FROM DisbursementTransaction dt WHERE dt.applicationId = :applicationId")
-    Long countByApplicationId(@Param("applicationId") Long applicationId);
+        @Query("SELECT COUNT(dt) FROM DisbursementTransaction dt WHERE dt.applicationId = :applicationId")
+        Long countByApplicationId(@Param("applicationId") Long applicationId);
 
-    // Find all disbursements for a specific user's applications
-    @Query("SELECT dt FROM DisbursementTransaction dt " +
-            "JOIN dt.loanApplication la " +
-            "WHERE la.user.id = :userId " +
-            "ORDER BY dt.transactionDate DESC")
-    Page<DisbursementTransaction> findByUserIdOrderByTransactionDateDesc(@Param("userId") Long userId,
-            Pageable pageable);
+        // Find all disbursements for a specific user's applications
+        @Query("SELECT dt FROM DisbursementTransaction dt " +
+                        "JOIN dt.loanApplication la " +
+                        "WHERE la.user.id = :userId " +
+                        "ORDER BY dt.transactionDate DESC")
+        Page<DisbursementTransaction> findByUserIdOrderByTransactionDateDesc(@Param("userId") Long userId,
+                        Pageable pageable);
 
-    // Statistics query for disbursed amount by date range
-    @Query("SELECT DATE(dt.transactionDate) as date, SUM(dt.amount) as totalAmount, COUNT(dt) as count " +
-           "FROM DisbursementTransaction dt " +
-           "WHERE dt.transactionDate >= :startDate AND dt.transactionDate <= :endDate " +
-           "GROUP BY DATE(dt.transactionDate) " +
-           "ORDER BY DATE(dt.transactionDate)")
-    List<Object[]> getDisbursedAmountByDateRange(@Param("startDate") LocalDateTime startDate,
-                                                @Param("endDate") LocalDateTime endDate);
+        // Statistics query for disbursed amount by date range
+        @Query("SELECT DATE(dt.transactionDate) as date, SUM(dt.amount) as totalAmount, COUNT(dt) as count " +
+                        "FROM DisbursementTransaction dt " +
+                        "WHERE dt.transactionDate >= :startDate AND dt.transactionDate <= :endDate " +
+                        "GROUP BY DATE(dt.transactionDate) " +
+                        "ORDER BY DATE(dt.transactionDate)")
+        List<Object[]> getDisbursedAmountByDateRange(@Param("startDate") LocalDateTime startDate,
+                        @Param("endDate") LocalDateTime endDate);
 }
