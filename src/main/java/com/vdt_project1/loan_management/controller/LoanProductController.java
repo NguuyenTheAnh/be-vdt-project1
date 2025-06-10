@@ -34,7 +34,6 @@ public class LoanProductController {
         }
 
         @GetMapping
-        @PreAuthorize("hasAuthority('GET_LOAN_PRODUCTS_ALL') or hasRole('ADMIN')")
         public ApiResponse<Page<LoanProductResponse>> getAllLoanProducts(
                         @RequestParam(required = false) String name,
                         @RequestParam(required = false) String status,
@@ -46,7 +45,6 @@ public class LoanProductController {
         }
 
         @GetMapping("/{id}")
-        @PreAuthorize("hasAuthority('GET_LOAN_PRODUCTS_BY_ID') or hasRole('ADMIN')")
         public ApiResponse<LoanProductResponse> getLoanProductById(@PathVariable Long id) {
                 log.info("Fetching loan product with ID: {}", id);
                 return ApiResponse.<LoanProductResponse>builder()
