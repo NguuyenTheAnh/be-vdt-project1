@@ -42,7 +42,10 @@ public class SecurityConfig {
                         "/auth/account-activation/**",
                         "/email/send")
                 .permitAll()
-                .requestMatchers(HttpMethod.GET, "/loan-products").permitAll()
+                .requestMatchers(HttpMethod.GET,
+                        "/loan-products/**",
+                        "/system-configurations/key/**"
+                ).permitAll()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers("/verification-tokens/**").permitAll()
                 .anyRequest().authenticated());
