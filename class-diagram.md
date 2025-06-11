@@ -208,25 +208,25 @@ classDiagram
     }
 
     %% Relationships
-    User ||--o{ LoanApplication : "tạo"
-    User }o--|| Role : "có"
-    Role ||--o{ Permission : "chứa"
+    User ||--o{ LoanApplication : tao
+    User }o--|| Role : co
+    Role ||--o{ Permission : chua
     
-    LoanProduct ||--o{ LoanApplication : "áp dụng cho"
+    LoanProduct ||--o{ LoanApplication : ap_dung_cho
     
-    LoanApplication ||--o{ Document : "có"
-    LoanApplication ||--o{ DisbursementTransaction : "liên kết"
-    LoanApplication ||--o{ Notification : "tạo ra"
+    LoanApplication ||--o{ Document : co
+    LoanApplication ||--o{ DisbursementTransaction : lien_ket
+    LoanApplication ||--o{ Notification : tao_ra
     
-    User ||--o{ Notification : "nhận"
-    User ||--o{ VerificationToken : "có"
+    User ||--o{ Notification : nhan
+    User ||--o{ VerificationToken : co
     
     %% Enum relationships
-    User ||--|| AccountStatus : "trạng thái"
-    LoanProduct ||--|| LoanProductStatus : "trạng thái"
-    LoanApplication ||--|| LoanApplicationStatus : "trạng thái"
-    Notification ||--|| NotificationType : "loại"
-    VerificationToken ||--|| VerificationTokenType : "loại"
+    User ||--|| AccountStatus : trang_thai
+    LoanProduct ||--|| LoanProductStatus : trang_thai
+    LoanApplication ||--|| LoanApplicationStatus : trang_thai
+    Notification ||--|| NotificationType : loai
+    VerificationToken ||--|| VerificationTokenType : loai
 ```
 
 ## Mô tả chi tiết các lớp
