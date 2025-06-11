@@ -205,7 +205,8 @@ classDiagram
         <<enumeration>>
         ACCOUNT_ACTIVATION
         PASSWORD_RESET
-    }    %% Relationships
+    }
+%% Relationships
     User --> LoanApplication
     User --> Role
     Role --> Permission
