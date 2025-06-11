@@ -34,6 +34,7 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults());
         http.authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.POST,
+                        "/users",
                         "/auth/login",
                         "/auth/logout",
                         "/auth/introspect",

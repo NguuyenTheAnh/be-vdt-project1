@@ -27,7 +27,6 @@ public class UserController {
     UserService userService;
 
     @PostMapping()
-    @PreAuthorize("hasAuthority('POST_USERS_CREATE') or hasRole('ADMIN')")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
                 .data(userService.createUser(request))
