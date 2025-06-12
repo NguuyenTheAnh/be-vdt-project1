@@ -58,5 +58,8 @@ build/
 hs_err_pid*
 replay_pid*
 
+# Configuration files with sensitive data
+src/main/resources/*.yaml
+src/main/resources/*.yml
 
 uploads/
