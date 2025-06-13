@@ -64,3 +64,4 @@ src/main/resources/*.yml
 !src/main/resources/*.template
 
 uploads/
+!uploads/.gitkeep
