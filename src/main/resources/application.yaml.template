@@ -7,8 +7,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: test.anhnguyenthe29112004@gmail.com
-    password: gxwdxlnfjdqkzpbt
+    username: YOUR_EMAIL_HERE
+    password: YOUR_EMAIL_PASSWORD_HERE
     protocol: smtp
     properties:
       mail:
@@ -18,8 +18,8 @@ spring:
             enable: true
   datasource:
     url: jdbc:postgresql://localhost:5432/loan_db
-    username: theanh
-    password: 100804
+    username: YOUR_DB_USERNAME
+    password: YOUR_DB_PASSWORD
   jpa:
     show-sql: true
   servlet:
@@ -27,6 +27,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 jwt:
-  signerKey: 2309abbd-d085-4386-8dee-b0e008713c62
+  signerKey: YOUR_JWT_SIGNER_KEY_HERE
   access-token-expiration: 3600
   refresh-duration: 36000

@@ -61,5 +61,6 @@ replay_pid*
 # Configuration files with sensitive data
 src/main/resources/*.yaml
 src/main/resources/*.yml
+!src/main/resources/*.template
 
 uploads/
