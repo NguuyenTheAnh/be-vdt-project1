@@ -1,5 +1,6 @@
 package com.vdt_project1.loan_management.service;
 
+import com.vdt_project1.loan_management.configuration.UploadProperties;
 import com.vdt_project1.loan_management.dto.response.UploadFileResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,9 +22,18 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class FileService {
-    Path uploadDir = Paths.get("uploads");
+
+    UploadProperties uploadProperties;
 
     public UploadFileResponse storeFile(MultipartFile file) throws IOException {
+        // Tạo upload directory động từ config
+        Path uploadDir = Paths.get(uploadProperties.getDirectory());
+
+        // Tạo thư mục nếu chưa tồn tại
+        if (!Files.exists(uploadDir)) {
+            Files.createDirectories(uploadDir);
+        }
+
         String originalFileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
 
         // Lấy phần đuôi file
