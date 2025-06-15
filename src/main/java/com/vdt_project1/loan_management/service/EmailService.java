@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,14 @@ import org.thymeleaf.context.Context;
 
 @Service
 @RequiredArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class EmailService {
 
-    JavaMailSender mailSender;
+    final JavaMailSender mailSender;
+    final TemplateEngine templateEngine;
 
-    TemplateEngine templateEngine;
+    @Value("${spring.mail.properties.mail.from:test.anhnguyenthe29112004@gmail.com}")
+    String fromEmail;
 
     public void sendHtmlTemplateEmail(String to, String subject, String name, String verificationCode)
             throws MessagingException {
@@ -30,6 +33,7 @@ public class EmailService {
         context.setVariable("verificationCode", verificationCode);
         String htmlContent = templateEngine.process("email-template", context);
 
+        helper.setFrom(fromEmail); // Sử dụng email từ cấu hình
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlContent, true); // true = HTML
@@ -60,9 +64,9 @@ public class EmailService {
         context.setVariable("transactionDate", transactionDate);
         context.setVariable("applicationId", applicationId);
         context.setVariable("notes", notes);
-
         String htmlContent = templateEngine.process("disburse-template", context);
 
+        helper.setFrom(fromEmail); // Sử dụng email từ cấu hình
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlContent, true); // true = HTML
@@ -85,9 +89,9 @@ public class EmailService {
         context.setVariable("amount", amount);
         context.setVariable("productName", productName);
         context.setVariable("internalNotes", internalNotes);
-
         String htmlContent = templateEngine.process("application-result-template", context);
 
+        helper.setFrom(fromEmail); // Sử dụng email từ cấu hình
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(htmlContent, true); // true = HTML
